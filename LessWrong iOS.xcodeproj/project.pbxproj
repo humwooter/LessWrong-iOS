@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4A9B43B12C0D986B00309804 /* LessWrong_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B02C0D986B00309804 /* LessWrong_iOSApp.swift */; };
+		4A9B43B32C0D986B00309804 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B22C0D986B00309804 /* Persistence.swift */; };
+		4A9B43B62C0D986B00309804 /* LessWrong_iOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B42C0D986B00309804 /* LessWrong_iOS.xcdatamodeld */; };
+		4A9B43B82C0D986B00309804 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B72C0D986B00309804 /* ContentView.swift */; };
+		4A9B43BA2C0D986D00309804 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A9B43B92C0D986D00309804 /* Assets.xcassets */; };
+		4A9B43BE2C0D986D00309804 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A9B43BD2C0D986D00309804 /* Preview Assets.xcassets */; };
+		4A9B43C52C0DA66700309804 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43C42C0DA66700309804 /* NetworkManager.swift */; };
+		4A9B43C72C0DADF700309804 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43C62C0DADF700309804 /* WebView.swift */; };
+		4A9B43C92C0DB2A200309804 /* PostDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43C82C0DB2A200309804 /* PostDetailView.swift */; };
+		4A9B43CB2C0DB3FC00309804 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43CA2C0DB3FC00309804 /* Extensions.swift */; };
+		4AA71CF32C0E625B0009D857 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA71CF22C0E625B0009D857 /* SearchModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		4A9B43AD2C0D986B00309804 /* LessWrong iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LessWrong iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A9B43B02C0D986B00309804 /* LessWrong_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessWrong_iOSApp.swift; sourceTree = "<group>"; };
+		4A9B43B22C0D986B00309804 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		4A9B43B52C0D986B00309804 /* LessWrong_iOS.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LessWrong_iOS.xcdatamodel; sourceTree = "<group>"; };
+		4A9B43B72C0D986B00309804 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		4A9B43B92C0D986D00309804 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4A9B43BB2C0D986D00309804 /* LessWrong_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LessWrong_iOS.entitlements; sourceTree = "<group>"; };
+		4A9B43BD2C0D986D00309804 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		4A9B43C42C0DA66700309804 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		4A9B43C62C0DADF700309804 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+		4A9B43C82C0DB2A200309804 /* PostDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDetailView.swift; sourceTree = "<group>"; };
+		4A9B43CA2C0DB3FC00309804 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		4AA71CF22C0E625B0009D857 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4A9B43AA2C0D986B00309804 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4A9B43A42C0D986B00309804 = {
+			isa = PBXGroup;
+			children = (
+				4A9B43AF2C0D986B00309804 /* LessWrong iOS */,
+				4A9B43AE2C0D986B00309804 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4A9B43AE2C0D986B00309804 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4A9B43AD2C0D986B00309804 /* LessWrong iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4A9B43AF2C0D986B00309804 /* LessWrong iOS */ = {
+			isa = PBXGroup;
+			children = (
+				4AA71CF12C0E5C1B0009D857 /* Models */,
+				4AA71CF02C0E5C0B0009D857 /* Views */,
+				4A9B43B02C0D986B00309804 /* LessWrong_iOSApp.swift */,
+				4A9B43B22C0D986B00309804 /* Persistence.swift */,
+				4A9B43B92C0D986D00309804 /* Assets.xcassets */,
+				4A9B43BB2C0D986D00309804 /* LessWrong_iOS.entitlements */,
+				4A9B43B42C0D986B00309804 /* LessWrong_iOS.xcdatamodeld */,
+				4A9B43BC2C0D986D00309804 /* Preview Content */,
+				4A9B43CA2C0DB3FC00309804 /* Extensions.swift */,
+			);
+			path = "LessWrong iOS";
+			sourceTree = "<group>";
+		};
+		4A9B43BC2C0D986D00309804 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				4A9B43BD2C0D986D00309804 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		4AA71CF02C0E5C0B0009D857 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4A9B43B72C0D986B00309804 /* ContentView.swift */,
+				4A9B43C62C0DADF700309804 /* WebView.swift */,
+				4A9B43C82C0DB2A200309804 /* PostDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4AA71CF12C0E5C1B0009D857 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4A9B43C42C0DA66700309804 /* NetworkManager.swift */,
+				4AA71CF22C0E625B0009D857 /* SearchModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4A9B43AC2C0D986B00309804 /* LessWrong iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A9B43C12C0D986D00309804 /* Build configuration list for PBXNativeTarget "LessWrong iOS" */;
+			buildPhases = (
+				4A9B43A92C0D986B00309804 /* Sources */,
+				4A9B43AA2C0D986B00309804 /* Frameworks */,
+				4A9B43AB2C0D986B00309804 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "LessWrong iOS";
+			productName = "LessWrong iOS";
+			productReference = 4A9B43AD2C0D986B00309804 /* LessWrong iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4A9B43A52C0D986B00309804 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1530;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					4A9B43AC2C0D986B00309804 = {
+						CreatedOnToolsVersion = 15.3;
+					};
+				};
+			};
+			buildConfigurationList = 4A9B43A82C0D986B00309804 /* Build configuration list for PBXProject "LessWrong iOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4A9B43A42C0D986B00309804;
+			productRefGroup = 4A9B43AE2C0D986B00309804 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4A9B43AC2C0D986B00309804 /* LessWrong iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4A9B43AB2C0D986B00309804 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A9B43BE2C0D986D00309804 /* Preview Assets.xcassets in Resources */,
+				4A9B43BA2C0D986D00309804 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4A9B43A92C0D986B00309804 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4A9B43B12C0D986B00309804 /* LessWrong_iOSApp.swift in Sources */,
+				4A9B43B62C0D986B00309804 /* LessWrong_iOS.xcdatamodeld in Sources */,
+				4A9B43C52C0DA66700309804 /* NetworkManager.swift in Sources */,
+				4AA71CF32C0E625B0009D857 /* SearchModel.swift in Sources */,
+				4A9B43CB2C0DB3FC00309804 /* Extensions.swift in Sources */,
+				4A9B43C72C0DADF700309804 /* WebView.swift in Sources */,
+				4A9B43C92C0DB2A200309804 /* PostDetailView.swift in Sources */,
+				4A9B43B82C0D986B00309804 /* ContentView.swift in Sources */,
+				4A9B43B32C0D986B00309804 /* Persistence.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4A9B43BF2C0D986D00309804 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4A9B43C02C0D986D00309804 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		4A9B43C22C0D986D00309804 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "LessWrong iOS/LessWrong_iOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"LessWrong iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = 7MT63WYVUC;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dodum.LessWrong-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4A9B43C32C0D986D00309804 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "LessWrong iOS/LessWrong_iOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"LessWrong iOS/Preview Content\"";
+				DEVELOPMENT_TEAM = 7MT63WYVUC;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dodum.LessWrong-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4A9B43A82C0D986B00309804 /* Build configuration list for PBXProject "LessWrong iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A9B43BF2C0D986D00309804 /* Debug */,
+				4A9B43C02C0D986D00309804 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4A9B43C12C0D986D00309804 /* Build configuration list for PBXNativeTarget "LessWrong iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A9B43C22C0D986D00309804 /* Debug */,
+				4A9B43C32C0D986D00309804 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		4A9B43B42C0D986B00309804 /* LessWrong_iOS.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				4A9B43B52C0D986B00309804 /* LessWrong_iOS.xcdatamodel */,
+			);
+			currentVersion = 4A9B43B52C0D986B00309804 /* LessWrong_iOS.xcdatamodel */;
+			path = LessWrong_iOS.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 4A9B43A52C0D986B00309804 /* Project object */;
+}
