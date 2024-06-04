@@ -28,16 +28,16 @@ struct MainView: View {
             .environmentObject(networkManager)
             .environmentObject(searchModel)
             .searchable(text: $searchModel.searchText, tokens: $searchModel.tokens) { token in
-                        switch token {
-                        case .newPosts:
-                            Text("New Posts")
-                        case .topPosts:
-                            Text("Top Posts")
-                        case .userPosts:
-                            Text("User")
-                        }
-                
-                
+                switch token {
+                case .newPosts:
+                    Text("New Posts")
+                case .topPosts:
+                    Text("Top Posts")
+                case .userPosts:
+                    Text("User")
+                case .comments:
+                    Text("Comment")
+                }
             }
     }
 }
@@ -45,14 +45,14 @@ struct MainView: View {
 struct MainChildView: View {
     @EnvironmentObject var networkManager: NetworkManager
     @Environment(\.colorScheme) var colorScheme
-    @State private var selectedQueryType: QueryType = .topPosts
-    @State private var postLimit: String = "10"
+    @State private var selectedQueryType: QueryType = .newPosts
+    @State private var postLimit: String = "70"
     @State private var username: String = "User"
     @EnvironmentObject var searchModel: SearchModel
     @Environment(\.customFont) var customFont: Font
     @Environment(\.isSearching) private var isSearching
-
-
+    @State private var posts: [Post] = []
+    
     var body: some View {
         NavigationView {
             mainView()
@@ -108,9 +108,12 @@ struct MainChildView: View {
         if colorScheme == .light {
             return .white
         } else {
-            return .white.opacity(0.1)
+            return .white.opacity(0.2)
         }
     }
+    
+    
+   
     
     @ViewBuilder
     func toolBarMenu() -> some View {
@@ -120,25 +123,37 @@ struct MainChildView: View {
                 Text("New Posts").tag(QueryType.newPosts)
                 Text("User Posts").tag(QueryType.userPosts)
             }
+            .onChange(of: selectedQueryType) { _ in
+                fetchPostsIfNeeded()
+            }
+            .onChange(of: searchModel.searchText) { oldValue, newValue in
+                fetchPostsIfNeeded()
+            }
+
             if case .userPosts = selectedQueryType {
                 TextField("Username", text: $username)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                    .onChange(of: username) { _ in
+                        fetchPostsIfNeeded()
+                    }
             }
+
             TextField("Post Limit", text: $postLimit)
                 .keyboardType(.numberPad)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-            
-            Button(action: {
-                if let limit = Int(postLimit) {
-                    networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: username, limit: limit)
+                .onChange(of: postLimit) { _ in
+                    fetchPostsIfNeeded()
                 }
-            }) {
-                Text("Apply")
-            }
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
+        }
+    }
+
+    private func fetchPostsIfNeeded() {
+        if let limit = Int(postLimit) {
+            networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
         }
     }
     
@@ -147,11 +162,11 @@ struct MainChildView: View {
         if !isSearching {
             ScrollView {
                 LazyVStack(spacing: 8) {
-                        ForEach(networkManager.posts) { post in
-                            Section {
-                                postFrontView(post: post)
-                            }.background(getSectionColor().opacity(0.5))
-                        }
+                    ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: username), id: \.id) { post in
+                        Section {
+                            postFrontView(post: post)
+                        }.background(getSectionColor().opacity(0.5))
+                    }
                     .cornerRadius(10)
                     .padding(.horizontal)
                 }
@@ -159,15 +174,37 @@ struct MainChildView: View {
                 
             }
         } else {
-            List {
+            
                 if searchModel.tokens.isEmpty && searchModel.searchText.isEmpty { //present possible tokens
-                    suggestedSearchView()
+                    List {
+                        suggestedSearchView()
+                    }
                 }
-                else {
-                    Text("Filtered posts based on query will go here")
-                }
+            else {
+                    ScrollView {
+                        if selectedQueryType != .comments {
+                            ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: searchModel.searchText), id: \.id) { post in
+                                Section {
+                                    postFrontView(post: post)
+                                }.background(getSectionColor().opacity(0.5))
+                                    .cornerRadius(10)
+                                    .padding(.horizontal)
+                            }
+                            .onChange(of: selectedQueryType) { oldValue, newValue in
+                                fetchPostsIfNeeded()
+                            }
+                        } else {
+                            ForEach(networkManager.recentComments.values.sorted(by: { $0.date > $1.date }), id: \.id) { comment in
+                                Section {
+                                    commentFrontView(comment: comment)
+                                }.background(getSectionColor().opacity(0.5))
+                            }
+                            .onChange(of: selectedQueryType) { oldValue, newValue in
+                                fetchPostsIfNeeded()
+                            }
+                        }
+                     }
             }
-         
         }
     }
     
@@ -176,6 +213,7 @@ struct MainChildView: View {
         Section(header: Text("Suggested")) {
             Button {
                 searchModel.tokens.append(.topPosts)
+                selectedQueryType = .topPosts
             } label: {
                 HStack {
                     Image(systemName: "flame.fill")
@@ -186,6 +224,7 @@ struct MainChildView: View {
             
             Button {
                 searchModel.tokens.append(.newPosts)
+                selectedQueryType = .newPosts
             } label: {
                 HStack {
                     Image(systemName: "arrow.up")
@@ -197,12 +236,26 @@ struct MainChildView: View {
             
             Button {
                 searchModel.tokens.append(.userPosts)
+                selectedQueryType = .userPosts
             } label: {
                 HStack {
                     Image(systemName: "person.fill")
                         .padding(.horizontal, 5)
                     
                     Text("User").foregroundStyle(getColor())
+                }
+            }
+            
+            
+            Button {
+                searchModel.tokens.append(.comments)
+                selectedQueryType = .comments
+            } label: {
+                HStack {
+                    Image(systemName: "bubble.fill")
+                        .padding(.horizontal, 5)
+                    
+                    Text("Comment").foregroundStyle(getColor())
                 }
             }
             
@@ -245,6 +298,39 @@ struct MainChildView: View {
             .padding()
         }.font(customFont)
     }
+    
+    @ViewBuilder
+    func commentFrontView(comment: Comment) -> some View {
+        VStack(alignment: .leading) {
+            Text(comment.post.title ?? "Unnamed")
+                .bold()
+                .padding(.bottom, 2)
+                .foregroundColor(getColor())
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text("By \(comment.user.slug ?? "Anonymous")")
+                .foregroundColor(.gray)
+                .padding(.bottom, 2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(comment.contents)
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrowshape.up.fill")
+//                    Text("\(comment.currentUserVote ?? 0)")
+                }
+                .foregroundColor(getColor())
+
+                Spacer()
+            }
+        }
+        .font(customFont)
+        .padding()
+    }
+       
 }
 private let itemFormatter: DateFormatter = {
     let formatter = DateFormatter()

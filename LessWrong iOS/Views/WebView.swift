@@ -20,7 +20,7 @@ struct WebView: UIViewRepresentable {
     let backgroundColor: UIColor
     @Binding var canGoBack: Bool
     
-    init(content: String? = nil, url: URL? = nil, backgroundColor: UIColor = .white, canGoBack: Binding<Bool>) {
+    init(content: String? = nil, url: URL? = nil, backgroundColor: UIColor = .black, canGoBack: Binding<Bool>) {
         self.content = content
         self.url = url
         self.backgroundColor = backgroundColor

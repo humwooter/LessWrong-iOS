@@ -16,14 +16,15 @@ class SearchModel: ObservableObject {
 }
 
 enum FilterTokens: String, Identifiable, Hashable, CaseIterable {
-    case topPosts, newPosts, userPosts
+    case topPosts, newPosts, userPosts, comments
     var id: Self { self }
 }
 
 enum QueryType: String, Identifiable, Hashable, CaseIterable {
-    case topPosts = "Top Posts"
-    case newPosts = "New Posts"
-    case userPosts = "User Posts"
+    case topPosts = "top"
+    case newPosts = "new"
+    case userPosts = "user"
+    case comments = "comments"
     
     var id: Self { self }
     
@@ -35,6 +36,8 @@ enum QueryType: String, Identifiable, Hashable, CaseIterable {
             return "new"
         case .userPosts:
             return "user"
+        case .comments:
+            return "comment"
         }
     }
 }
