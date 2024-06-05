@@ -45,13 +45,26 @@ struct MainView: View {
 struct MainChildView: View {
     @EnvironmentObject var networkManager: NetworkManager
     @Environment(\.colorScheme) var colorScheme
-    @State private var selectedQueryType: QueryType = .newPosts
+    @State private var selectedQueryType: QueryType = .topPosts
     @State private var postLimit: String = "70"
     @State private var username: String = "User"
     @EnvironmentObject var searchModel: SearchModel
     @Environment(\.customFont) var customFont: Font
     @Environment(\.isSearching) private var isSearching
-    @State private var posts: [Post] = []
+    
+    
+    @State private var showingShareSheet = false
+    @State private var selectedURL = ""
+    
+    private var shouldPresentShareSheet: Binding<Bool> {
+        Binding(
+            get: { !selectedURL.isEmpty && showingShareSheet },
+            set: { showingShareSheet = $0 }
+        )
+    }
+
+
+
     
     var body: some View {
         NavigationView {
@@ -121,7 +134,6 @@ struct MainChildView: View {
             Picker("Query Type", selection: $selectedQueryType) {
                 Text("Top Posts").tag(QueryType.topPosts)
                 Text("New Posts").tag(QueryType.newPosts)
-                Text("User Posts").tag(QueryType.userPosts)
             }
             .onChange(of: selectedQueryType) { _ in
                 fetchPostsIfNeeded()
@@ -160,19 +172,47 @@ struct MainChildView: View {
     @ViewBuilder
     func mainView() -> some View {
         if !isSearching {
-            ScrollView {
-                LazyVStack(spacing: 8) {
+//            ScrollView {
+                List {
                     ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: username), id: \.id) { post in
                         Section {
                             postFrontView(post: post)
-                        }.background(getSectionColor().opacity(0.5))
+                                .swipeActions(edge: .trailing) {
+                                                Button {
+                                                    selectedURL = post.url
+                                                    // Pseudocode for sharing the post
+                                                    showingShareSheet = true
+                                                } label: {
+                                                    Label("Share", systemImage: "square.and.arrow.up")
+                                                }
+                                                .tint(.cyan)
+                                               
+                                            }
+                                            .swipeActions(edge: .leading) {
+                                                Button {
+                                                    // Pseudocode for bookmarking the post
+                                                    // This should eventually add the post URL to a persisted collection
+                                                    // Example: networkManager.bookmarkPost(post.url)
+                                                } label: {
+                                                    Label("Bookmark", systemImage: "bookmark.fill")
+                                                }
+                                                .tint(.red)
+                                            }
+                                     
+                               
+                        }
+                        .sheet(isPresented: shouldPresentShareSheet) {
+                                ShareSheet(items: [URL(string: selectedURL) as Any])
+                                    .presentationDetents([.medium]) // Show bottom half of the screen
+                        }
+                        .listSectionSpacing(10)
+                        .listRowBackground(getSectionColor().opacity(0.5))
                     }
-                    .cornerRadius(10)
-                    .padding(.horizontal)
+                    
                 }
                 .setNavigationBarTitleToLightMode()
                 
-            }
+//            }
         } else {
             
                 if searchModel.tokens.isEmpty && searchModel.searchText.isEmpty { //present possible tokens
@@ -181,20 +221,51 @@ struct MainChildView: View {
                     }
                 }
             else {
-                    ScrollView {
+                
+                
+                    List {
                         if selectedQueryType != .comments {
                             ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: searchModel.searchText), id: \.id) { post in
                                 Section {
                                     postFrontView(post: post)
-                                }.background(getSectionColor().opacity(0.5))
-                                    .cornerRadius(10)
-                                    .padding(.horizontal)
+                                        .swipeActions(edge: .trailing) {
+                                                        Button {
+                                                            selectedURL = post.url
+                                                            // Pseudocode for sharing the post
+                                                            showingShareSheet = true
+                                                        } label: {
+                                                            Label("Share", systemImage: "square.and.arrow.up")
+                                                        }
+                                                        .tint(.cyan)
+                                                       
+                                                    }
+                                                    .swipeActions(edge: .leading) {
+                                                        Button {
+                                                            // Pseudocode for bookmarking the post
+                                                            // This should eventually add the post URL to a persisted collection
+                                                            // Example: networkManager.bookmarkPost(post.url)
+                                                        } label: {
+                                                            Label("Bookmark", systemImage: "bookmark.fill")
+                                                        }
+                                                        .tint(.red)
+                                                    }
+                                             
+                                       
+                                }
+                                .sheet(isPresented: $showingShareSheet) {
+                                    if !selectedURL.isEmpty {
+                                        ShareSheet(items: [URL(string: selectedURL) as Any])
+                                            .presentationDetents([.medium]) // Show bottom half of the screen
+                                    }
+                                }
+                                .listSectionSpacing(10)
+                                .listRowBackground(getSectionColor().opacity(0.5))
                             }
                             .onChange(of: selectedQueryType) { oldValue, newValue in
                                 fetchPostsIfNeeded()
                             }
                         } else {
-                            ForEach(networkManager.recentComments.values.sorted(by: { $0.date > $1.date }), id: \.id) { comment in
+                            ForEach(networkManager.recentComments.values.sorted(by: { $0.post.title > $1.post.title }), id: \.id) { comment in
                                 Section {
                                     commentFrontView(comment: comment)
                                 }.background(getSectionColor().opacity(0.5))
@@ -295,8 +366,11 @@ struct MainChildView: View {
                     .foregroundColor(getColor())
                 }
             }
-            .padding()
+            .padding(3)
+//            .padding()
+            
         }.font(customFont)
+        
     }
     
     @ViewBuilder

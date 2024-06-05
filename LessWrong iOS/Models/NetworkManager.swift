@@ -219,23 +219,74 @@ class NetworkManager: ObservableObject {
                     print("No data received")
                     return
                 }
-
+                
+                
                 do {
-                    let responseData = try JSONDecoder().decode(GraphQLResponse<PostData>.self, from: data)
-                    DispatchQueue.main.async {
-                        let filtered_posts =  responseData.data.posts.results.filter { post in
-                            
-                            searchText.isEmpty || post.title.lowercased().contains(searchText.lowercased()) || ((post.user?.username.lowercased().contains(searchText.lowercased())) != nil)
 
-                        }
-                        for post in filtered_posts {
-                                self.posts[post.url] = post
-                            }
-                    }
-                } catch {
-                    print("Error decoding response: \(error)")
-                }
-            }.resume()
+                              switch queryType {
+
+                              case .comments:
+                                  print("DECODING COMMENTS")
+
+                                  let responseData = try JSONDecoder().decode(GraphQLResponse<CommentsData>.self, from: data)
+
+                                  DispatchQueue.main.async {
+
+                                      let filtered_comments = responseData.data.comments.results.filter { comment in
+                                          
+                                          searchText.isEmpty || comment.contents.lowercased().contains(searchText.lowercased()) || ((comment.user.slug.lowercased().contains(searchText.lowercased())) != nil)
+                                      }
+                                      print("FILTERED COMMENTS: \(filtered_comments)")
+                                      for comment in filtered_comments {
+                                          self.recentComments[comment.pageUrl] = comment
+                                      }
+
+                                  }
+
+                              default:
+
+                                  let responseData = try JSONDecoder().decode(GraphQLResponse<PostData>.self, from: data)
+
+                                  DispatchQueue.main.async {
+
+                                      let filtered_posts = responseData.data.posts.results.filter { post in
+
+                                          searchText.isEmpty || post.title.lowercased().contains(searchText.lowercased()) || ((post.user?.username.lowercased().contains(searchText.lowercased())) != nil)
+
+                                      }
+                                      
+                                      for post in filtered_posts {
+                                              self.posts[post.url] = post
+                                          }
+
+                                  }
+
+                              }
+
+                          } catch {
+
+                              print("Error decoding response: \(error)")
+
+                          }
+
+                      }.resume()
+
+//                do {
+//                    let responseData = try JSONDecoder().decode(GraphQLResponse<PostData>.self, from: data)
+//                    DispatchQueue.main.async {
+//                        let filtered_posts =  responseData.data.posts.results.filter { post in
+//                            
+//                            searchText.isEmpty || post.title.lowercased().contains(searchText.lowercased()) || ((post.user?.username.lowercased().contains(searchText.lowercased())) != nil)
+//
+//                        }
+//                        for post in filtered_posts {
+//                                self.posts[post.url] = post
+//                            }
+//                    }
+//                } catch {
+//                    print("Error decoding response: \(error)")
+//                }
+//            }.resume()
         }
     }
     
@@ -578,46 +629,24 @@ struct CommentResults: Decodable {
 }
 
 struct Comment: Decodable, Identifiable {
-
     let _id: String
-        
     let post: PostInfo
-    
-    let contents: String
-    
-
     let user: UserInfo
-
     let postId: String
-
     let pageUrl: String
-
+    let contents: String
+    let voteCount: Int?
     
-
     var id: String { _id }
-
     
-
     struct PostInfo: Decodable {
-
         let _id: String
-
         let title: String
-
         let slug: String
-
     }
     
-   
-
-    
-
     struct UserInfo: Decodable {
-
         let _id: String
-
         let slug: String
-
     }
-
 }
