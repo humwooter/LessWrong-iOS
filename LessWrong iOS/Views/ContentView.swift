@@ -12,22 +12,82 @@ import UIKit
 
 
 
+
+
+
+
+enum PickerOptions: String, CaseIterable {
+    case bookmark = "Bookmark"
+    case lessWrong = "LW"
+    case effectiveAltruism = "EA"
+    case settings = "Settings"
+    case search = "Search"
+}
+
+
 struct ContentView: View {
+    @State private var selectedOption: PickerOptions = .lessWrong
+    @StateObject var networkManager = NetworkManager()
+    @State private var selectedItem: String = "TOP"
+    @Environment(\.colorScheme) var colorScheme
+
     var body : some View {
-        MainView()
+            
+            // Your existing view code
+            MainView()
+                .environmentObject(networkManager)
+        .background {
+            ZStack {
+                LinearGradient(colors: [getTopBackgroundColor(),getBackgroundColor()], startPoint: .top, endPoint: .bottom)
+            }.ignoresSafeArea(.all)
+        }
+
+        }
+    
+    
+    func getTopBackgroundColor() -> Color {
+        if colorScheme == .light {
+            return Color("Background Color Light Light")
+        } else {
+            return .clear
+        }
     }
+    
+    func getBackgroundColor() -> Color {
+        if colorScheme == .dark {
+            return .brown.opacity(0.2)
+        } else {
+            return Color("Background Color Light Dark")
+        }
+    }
+
 }
 
 struct MainView: View {
-    @StateObject var networkManager = NetworkManager()
+    @EnvironmentObject var networkManager : NetworkManager
     @ObservedObject var searchModel = SearchModel()
+    @State private var selectedOption: PickerOptions = .lessWrong
+    var showSearch: Binding<Bool> {
+          Binding<Bool>(
+              get: { self.selectedOption == .search },
+              set: { newValue in
+                  if newValue {
+                      self.selectedOption = .search
+                  } else {
+                      self.selectedOption = .lessWrong
+                  }
+              }
+          )
+      }
+
     
     var body : some View {
-        MainChildView()
+       
+        MainChildView(selectedOption: $selectedOption)
             .accentColor(.red)
             .environmentObject(networkManager)
             .environmentObject(searchModel)
-            .searchable(text: $searchModel.searchText, tokens: $searchModel.tokens) { token in
+            .searchable(text: $searchModel.searchText, tokens: $searchModel.tokens, isPresented: showSearch, placement: .navigationBarDrawer(displayMode: .automatic)) { token in
                 switch token {
                 case .newPosts:
                     Text("New Posts")
@@ -51,7 +111,9 @@ struct MainChildView: View {
     @EnvironmentObject var searchModel: SearchModel
     @Environment(\.customFont) var customFont: Font
     @Environment(\.isSearching) private var isSearching
-    
+    @Binding  var selectedOption: PickerOptions
+    @Namespace private var animation
+
     
     @State private var showingShareSheet = false
     @State private var selectedURL = ""
@@ -68,13 +130,21 @@ struct MainChildView: View {
     
     var body: some View {
         NavigationView {
-            mainView()
-                .background {
-                    ZStack {
-                        LinearGradient(colors: [getTopBackgroundColor(),getBackgroundColor()], startPoint: .top, endPoint: .bottom)
-                    }.ignoresSafeArea(.all)
-                }
-                .scrollContentBackground(.hidden)
+            VStack {
+                Spacer().frame(maxWidth: .infinity, maxHeight: 60)
+                    .overlay {
+                        horizontalPickerView().frame(maxWidth: .infinity, maxHeight: 60)
+                       
+                    }
+                mainView()
+
+            }
+            .background {
+                ZStack {
+                    LinearGradient(colors: [getTopBackgroundColor(),getBackgroundColor()], startPoint: .top, endPoint: .bottom)
+                }.ignoresSafeArea(.all)
+            }
+            .scrollContentBackground(.hidden)
             .navigationTitle("Posts")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -83,7 +153,9 @@ struct MainChildView: View {
             }
             .onAppear {
                           if let limit = Int(postLimit) {
-                              networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: username, limit: limit)
+                              Task {
+                                  await networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
+                              }
                           }
     
                       }
@@ -165,16 +237,39 @@ struct MainChildView: View {
 
     private func fetchPostsIfNeeded() {
         if let limit = Int(postLimit) {
-            networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
+            Task {
+                await networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
+            }
         }
     }
+    
+    
+    func filteredPosts() -> [Post] {
+        fetchPostsIfNeeded()
+        let posts = networkManager.sortedPosts(by: selectedQueryType, searchText: username)
+        
+        switch selectedOption {
+        case .lessWrong:
+            return posts.filter { $0.url.starts(with: "https://www.lesswrong") }
+        case .effectiveAltruism:
+            let filtered_posts = posts.filter { !$0.url.starts(with: "https://www.lesswrong") }
+            if filtered_posts.isEmpty {
+                return posts
+            } else {
+                return filtered_posts
+            }
+        default:
+            return posts
+        }
+    }
+
     
     @ViewBuilder
     func mainView() -> some View {
         if !isSearching {
-//            ScrollView {
+
                 List {
-                    ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: username), id: \.id) { post in
+                    ForEach(filteredPosts(), id: \.id) { post in
                         Section {
                             postFrontView(post: post)
                                 .swipeActions(edge: .trailing) {
@@ -208,22 +303,21 @@ struct MainChildView: View {
                         .listSectionSpacing(10)
                         .listRowBackground(getSectionColor().opacity(0.5))
                     }
-                    
                 }
-                .setNavigationBarTitleToLightMode()
-                
-//            }
+           
         } else {
             
                 if searchModel.tokens.isEmpty && searchModel.searchText.isEmpty { //present possible tokens
                     List {
                         suggestedSearchView()
+                        
                     }
                 }
             else {
                 
                 
                     List {
+         
                         if selectedQueryType != .comments {
                             ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: searchModel.searchText), id: \.id) { post in
                                 Section {
@@ -275,8 +369,40 @@ struct MainChildView: View {
                             }
                         }
                      }
+//                    .overlay {
+//                        VStack {
+//                            horizontalPickerView()
+//                            Spacer()
+//                        }
+//                    }
             }
         }
+    }
+    
+    @ViewBuilder
+    func horizontalPickerView() -> some View {
+        HorizontalPicker(selectedOption: $selectedOption, animation: animation).padding(.top).padding(.leading)
+            .frame(maxWidth: .infinity)
+//            .background {
+//                ZStack {
+//                    colorScheme == .dark ? Color.black.opacity(0.9) : getTopBackgroundColor()
+//                }.ignoresSafeArea(.all)
+//            }
+            .onChange(of: selectedOption) { newValue in
+                switch newValue {
+                case .lessWrong:
+                    networkManager.currentEndpoint = "https://www.lesswrong.com/graphql"
+                case .effectiveAltruism:
+                    networkManager.currentEndpoint = "https://forum.effectivealtruism.org/graphql"
+                case .settings:
+                    // Navigate to settings view or perform other actions
+                    print("Settings selected")
+                case .search:
+                    print("Settings selected")
+                case .bookmark:
+                    print("Bookmark")
+                }
+            }
     }
     
     @ViewBuilder
@@ -287,7 +413,7 @@ struct MainChildView: View {
                 selectedQueryType = .topPosts
             } label: {
                 HStack {
-                    Image(systemName: "flame.fill")
+                    Image(systemName: "flame.fill").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     Text("Top Posts").foregroundStyle(getColor())
                 }
@@ -298,7 +424,7 @@ struct MainChildView: View {
                 selectedQueryType = .newPosts
             } label: {
                 HStack {
-                    Image(systemName: "arrow.up")
+                    Image(systemName: "arrow.up").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     
                     Text("New Posts").foregroundStyle(getColor())
@@ -310,7 +436,7 @@ struct MainChildView: View {
                 selectedQueryType = .userPosts
             } label: {
                 HStack {
-                    Image(systemName: "person.fill")
+                    Image(systemName: "person.fill").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     
                     Text("User").foregroundStyle(getColor())
@@ -323,7 +449,7 @@ struct MainChildView: View {
                 selectedQueryType = .comments
             } label: {
                 HStack {
-                    Image(systemName: "bubble.fill")
+                    Image(systemName: "bubble.fill").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     
                     Text("Comment").foregroundStyle(getColor())
@@ -331,6 +457,7 @@ struct MainChildView: View {
             }
             
         }
+        
     }
 
     @ViewBuilder
@@ -342,11 +469,14 @@ struct MainChildView: View {
 //                    .font(.headline)
                     .foregroundColor(getColor())
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Text("By \(post.author ?? "Unknown")")
+                Text("By \(post.author ?? post.slug ?? post.user?.username ?? "Unknown")")
 //                    .font(.subheadline)
                     .foregroundColor(.gray)
                     .padding(.bottom, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .onAppear {
+                        print("POST: \(post)")
+                    }
 
                 HStack {
                     HStack(spacing: 4) {

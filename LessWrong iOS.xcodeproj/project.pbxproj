@@ -20,6 +20,7 @@
 		4AA71CF32C0E625B0009D857 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA71CF22C0E625B0009D857 /* SearchModel.swift */; };
 		4ABC0F232C0FC21E009A947F /* CommentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABC0F222C0FC21E009A947F /* CommentDetailView.swift */; };
 		4ABC0F252C0FD28C009A947F /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABC0F242C0FD28C009A947F /* ShareSheet.swift */; };
+		4ABC0F272C11D619009A947F /* CustomPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABC0F262C11D619009A947F /* CustomPicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		4AA71CF22C0E625B0009D857 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		4ABC0F222C0FC21E009A947F /* CommentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentDetailView.swift; sourceTree = "<group>"; };
 		4ABC0F242C0FD28C009A947F /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		4ABC0F262C11D619009A947F /* CustomPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 				4A9B43C42C0DA66700309804 /* NetworkManager.swift */,
 				4AA71CF22C0E625B0009D857 /* SearchModel.swift */,
 				4ABC0F242C0FD28C009A947F /* ShareSheet.swift */,
+				4ABC0F262C11D619009A947F /* CustomPicker.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -184,6 +187,7 @@
 			files = (
 				4A9B43B12C0D986B00309804 /* LessWrong_iOSApp.swift in Sources */,
 				4A9B43B62C0D986B00309804 /* LessWrong_iOS.xcdatamodeld in Sources */,
+				4ABC0F272C11D619009A947F /* CustomPicker.swift in Sources */,
 				4A9B43C52C0DA66700309804 /* NetworkManager.swift in Sources */,
 				4ABC0F232C0FC21E009A947F /* CommentDetailView.swift in Sources */,
 				4AA71CF32C0E625B0009D857 /* SearchModel.swift in Sources */,

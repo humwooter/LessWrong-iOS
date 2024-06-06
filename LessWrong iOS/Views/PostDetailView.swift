@@ -25,9 +25,9 @@ struct PostDetailView: View {
                     LinearGradient(colors: [Color.clear, Color.brown.opacity(0.3)], startPoint: .top, endPoint: .bottom)
                 }.ignoresSafeArea()
             }
-            .onAppear {
-                networkManager.fetchPostDetail(url: post.url)
-            }
+            .task {
+                       await networkManager.fetchPostDetail(url: post.url)
+                   }
     }
 
     @ViewBuilder
