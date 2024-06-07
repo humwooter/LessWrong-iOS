@@ -12,7 +12,7 @@ import UIKit
 
 
 struct PostDetailView: View {
-    let post: Post
+    let postURL: String
     @EnvironmentObject var networkManager: NetworkManager
     @State private var canGoBack = false
 
@@ -26,13 +26,13 @@ struct PostDetailView: View {
                 }.ignoresSafeArea()
             }
             .task {
-                       await networkManager.fetchPostDetail(url: post.url)
+                       await networkManager.fetchPostDetail(url: postURL)
                    }
     }
 
     @ViewBuilder
     func detailView() -> some View {
-        if let url = URL(string: post.url) {
+        if let url = URL(string: postURL) {
             VStack {
                 if canGoBack {
                     Button(action: goBack) {

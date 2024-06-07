@@ -10,9 +10,19 @@ import SwiftUI
 import Combine
 
 class SearchModel: ObservableObject {
-    @Published var searchText: String = ""
+//    @Published var searchText: String = ""
     @Published var selectedQueryType: QueryType = .topPosts
-    @Published var tokens: [FilterTokens] = []
+//    @Published var tokens: [FilterTokens] = []
+    @Published var searchText: String = "" {
+         didSet {
+             print("Search Text: \(searchText)")
+         }
+     }
+      @Published var tokens: [FilterTokens] = [] {
+          didSet {
+              print("Tokens: \(tokens)")
+          }
+      }
 }
 
 enum FilterTokens: String, Identifiable, Hashable, CaseIterable {

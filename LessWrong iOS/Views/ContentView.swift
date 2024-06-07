@@ -87,7 +87,7 @@ struct MainView: View {
             .accentColor(.red)
             .environmentObject(networkManager)
             .environmentObject(searchModel)
-            .searchable(text: $searchModel.searchText, tokens: $searchModel.tokens, isPresented: showSearch, placement: .navigationBarDrawer(displayMode: .automatic)) { token in
+            .searchable(text: $searchModel.searchText, tokens: $searchModel.tokens, isPresented: showSearch) { token in
                 switch token {
                 case .newPosts:
                     Text("New Posts")
@@ -141,7 +141,7 @@ struct MainChildView: View {
             }
             .background {
                 ZStack {
-                    LinearGradient(colors: [getTopBackgroundColor(),getBackgroundColor()], startPoint: .top, endPoint: .bottom)
+                    LinearGradient(colors: [getTopBackgroundColor(colorScheme: colorScheme),getBackgroundColor(colorScheme: colorScheme)], startPoint: .top, endPoint: .bottom)
                 }.ignoresSafeArea(.all)
             }
             .scrollContentBackground(.hidden)
@@ -165,37 +165,6 @@ struct MainChildView: View {
     }
     
     
-    func getTopBackgroundColor() -> Color {
-        if colorScheme == .light {
-            return Color("Background Color Light Light")
-        } else {
-            return .clear
-        }
-    }
-    
-    func getBackgroundColor() -> Color {
-        if colorScheme == .dark {
-            return .brown.opacity(0.2)
-        } else {
-            return Color("Background Color Light Dark")
-        }
-    }
-
-    func getColor() -> Color {
-        if colorScheme == .dark {
-            return .white
-        } else {
-            return .black
-        }
-    }
-    
-    func getSectionColor() -> Color {
-        if colorScheme == .light {
-            return .white
-        } else {
-            return .white.opacity(0.2)
-        }
-    }
     
     
    
@@ -208,28 +177,35 @@ struct MainChildView: View {
                 Text("New Posts").tag(QueryType.newPosts)
             }
             .onChange(of: selectedQueryType) { _ in
-                fetchPostsIfNeeded()
+                if !isSearching {
+                    fetchPostsIfNeeded()
+                }
             }
-            .onChange(of: searchModel.searchText) { oldValue, newValue in
-                fetchPostsIfNeeded()
+            .onChange(of: selectedOption) { oldValue, newValue in
+                if !isSearching {
+                    if newValue != .bookmark {
+                        fetchPostsIfNeeded()
+                    }
+                }
             }
+       
 
             if case .userPosts = selectedQueryType {
                 TextField("Username", text: $username)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
-                    .onChange(of: username) { _ in
-                        fetchPostsIfNeeded()
-                    }
+//                    .onChange(of: username) { _ in
+//                        fetchPostsIfNeeded()
+//                    }
             }
 
             TextField("Post Limit", text: $postLimit)
                 .keyboardType(.numberPad)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-                .onChange(of: postLimit) { _ in
-                    fetchPostsIfNeeded()
-                }
+//                .onChange(of: postLimit) { _ in
+//                    fetchPostsIfNeeded()
+//                }
         } label: {
             Label("Options", systemImage: "slider.horizontal.3")
         }
@@ -238,15 +214,17 @@ struct MainChildView: View {
     private func fetchPostsIfNeeded() {
         if let limit = Int(postLimit) {
             Task {
+                // Preserve searchText before fetching
+//                let currentSearchText = searchModel.searchText
                 await networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
+                // Restore searchText after fetching
+//                searchModel.searchText = currentSearchText
             }
         }
     }
     
-    
     func filteredPosts() -> [Post] {
-        fetchPostsIfNeeded()
-        let posts = networkManager.sortedPosts(by: selectedQueryType, searchText: username)
+        let posts = networkManager.sortedPosts(by: selectedQueryType, searchText: searchModel.searchText)
         
         switch selectedOption {
         case .lessWrong:
@@ -267,44 +245,54 @@ struct MainChildView: View {
     @ViewBuilder
     func mainView() -> some View {
         if !isSearching {
-
+            if selectedOption == .bookmark {
+                BookmarksView()
+            } else if selectedOption == .settings {
+                BookmarksView()
+            } else {
                 List {
-                    ForEach(filteredPosts(), id: \.id) { post in
+                    ForEach(filteredPosts().prefix(25), id: \.id) { post in
                         Section {
                             postFrontView(post: post)
                                 .swipeActions(edge: .trailing) {
-                                                Button {
-                                                    selectedURL = post.url
-                                                    // Pseudocode for sharing the post
-                                                    showingShareSheet = true
-                                                } label: {
-                                                    Label("Share", systemImage: "square.and.arrow.up")
-                                                }
-                                                .tint(.cyan)
-                                               
-                                            }
-                                            .swipeActions(edge: .leading) {
-                                                Button {
-                                                    // Pseudocode for bookmarking the post
-                                                    // This should eventually add the post URL to a persisted collection
-                                                    // Example: networkManager.bookmarkPost(post.url)
-                                                } label: {
-                                                    Label("Bookmark", systemImage: "bookmark.fill")
-                                                }
-                                                .tint(.red)
-                                            }
-                                     
-                               
+                                    Button {
+                                        selectedURL = post.url
+                                        // Pseudocode for sharing the post
+                                        showingShareSheet = true
+                                    } label: {
+                                        Label("Share", systemImage: "square.and.arrow.up")
+                                    }
+                                    .tint(.cyan)
+                                    
+                                }
+                                .swipeActions(edge: .leading) {
+                                    Button {
+                                        bookmarkPost(post: post)
+                                        // Pseudocode for bookmarking the post
+                                        // This should eventually add the post URL to a persisted collection
+                                        // Example: networkManager.bookmarkPost(post.url)
+                                    } label: {
+                                        Label("Bookmark", systemImage: "bookmark.fill")
+                                    }
+                                    .tint(.red)
+                                }
+                            
+                            
+                        }
+                        .onChange(of: selectedOption) { oldValue, newValue in
+                            if newValue.rawValue == "LW" || newValue.rawValue == "EA" {
+                                fetchPostsIfNeeded()
+                            }
                         }
                         .sheet(isPresented: shouldPresentShareSheet) {
-                                ShareSheet(items: [URL(string: selectedURL) as Any])
-                                    .presentationDetents([.medium]) // Show bottom half of the screen
+                            ShareSheet(items: [URL(string: selectedURL) as Any])
+                                .presentationDetents([.medium]) // Show bottom half of the screen
                         }
                         .listSectionSpacing(10)
-                        .listRowBackground(getSectionColor().opacity(0.5))
+                        .listRowBackground(getSectionColor(colorScheme: colorScheme).opacity(0.5))
                     }
                 }
-           
+            }
         } else {
             
                 if searchModel.tokens.isEmpty && searchModel.searchText.isEmpty { //present possible tokens
@@ -319,7 +307,7 @@ struct MainChildView: View {
                     List {
          
                         if selectedQueryType != .comments {
-                            ForEach(networkManager.sortedPosts(by: selectedQueryType, searchText: searchModel.searchText), id: \.id) { post in
+                            ForEach(filteredPosts().prefix(25), id: \.id) { post in
                                 Section {
                                     postFrontView(post: post)
                                         .swipeActions(edge: .trailing) {
@@ -353,7 +341,7 @@ struct MainChildView: View {
                                     }
                                 }
                                 .listSectionSpacing(10)
-                                .listRowBackground(getSectionColor().opacity(0.5))
+                                .listRowBackground(getSectionColor(colorScheme: colorScheme).opacity(0.5))
                             }
                             .onChange(of: selectedQueryType) { oldValue, newValue in
                                 fetchPostsIfNeeded()
@@ -362,11 +350,11 @@ struct MainChildView: View {
                             ForEach(networkManager.recentComments.values.sorted(by: { $0.post.title > $1.post.title }), id: \.id) { comment in
                                 Section {
                                     commentFrontView(comment: comment)
-                                }.background(getSectionColor().opacity(0.5))
+                                }.background(getSectionColor(colorScheme: colorScheme).opacity(0.5))
                             }
-                            .onChange(of: selectedQueryType) { oldValue, newValue in
-                                fetchPostsIfNeeded()
-                            }
+//                            .onChange(of: selectedQueryType) { oldValue, newValue in
+//                                fetchPostsIfNeeded()
+//                            }
                         }
                      }
 //                    .overlay {
@@ -415,7 +403,7 @@ struct MainChildView: View {
                 HStack {
                     Image(systemName: "flame.fill").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
-                    Text("Top Posts").foregroundStyle(getColor())
+                    Text("Top Posts").foregroundStyle(getColor(colorScheme: colorScheme))
                 }
             }
             
@@ -427,7 +415,7 @@ struct MainChildView: View {
                     Image(systemName: "arrow.up").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     
-                    Text("New Posts").foregroundStyle(getColor())
+                    Text("New Posts").foregroundStyle(getColor(colorScheme: colorScheme))
                 }
             }
             
@@ -439,7 +427,7 @@ struct MainChildView: View {
                     Image(systemName: "person.fill").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     
-                    Text("User").foregroundStyle(getColor())
+                    Text("User").foregroundStyle(getColor(colorScheme: colorScheme))
                 }
             }
             
@@ -452,7 +440,7 @@ struct MainChildView: View {
                     Image(systemName: "bubble.fill").foregroundStyle(Color.red)
                         .padding(.horizontal, 5)
                     
-                    Text("Comment").foregroundStyle(getColor())
+                    Text("Comment").foregroundStyle(getColor(colorScheme: colorScheme))
                 }
             }
             
@@ -462,12 +450,12 @@ struct MainChildView: View {
 
     @ViewBuilder
     func postFrontView(post: Post) -> some View {
-        NavigationLink(destination: PostDetailView(post: post).environmentObject(networkManager)) {
+        NavigationLink(destination: PostDetailView(postURL: post.url).environmentObject(networkManager)) {
             VStack() {
                 Text(post.title).bold()
                     .padding(.bottom, 2)
 //                    .font(.headline)
-                    .foregroundColor(getColor())
+                    .foregroundColor(getColor(colorScheme: colorScheme))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Text("By \(post.author ?? post.slug ?? post.user?.username ?? "Unknown")")
 //                    .font(.subheadline)
@@ -484,7 +472,7 @@ struct MainChildView: View {
                         Text("\(post.voteCount ?? 0)")
                     }
 //                    .font(.subheadline)
-                    .foregroundColor(getColor())
+                    .foregroundColor(getColor(colorScheme: colorScheme))
 
                     Spacer()
 
@@ -493,7 +481,7 @@ struct MainChildView: View {
                         Text("\(post.commentCount ?? 0)")
                     }
 //                    .font(.subheadline)
-                    .foregroundColor(getColor())
+                    .foregroundColor(getColor(colorScheme: colorScheme))
                 }
             }
             .padding(3)
@@ -509,7 +497,7 @@ struct MainChildView: View {
             Text(comment.post.title ?? "Unnamed")
                 .bold()
                 .padding(.bottom, 2)
-                .foregroundColor(getColor())
+                .foregroundColor(getColor(colorScheme: colorScheme))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text("By \(comment.user.slug ?? "Anonymous")")
@@ -526,7 +514,7 @@ struct MainChildView: View {
                     Image(systemName: "arrowshape.up.fill")
 //                    Text("\(comment.currentUserVote ?? 0)")
                 }
-                .foregroundColor(getColor())
+                .foregroundColor(getColor(colorScheme: colorScheme))
 
                 Spacer()
             }

@@ -14,8 +14,12 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+            let newItem = BookmarkedPost(context: viewContext)
+            newItem.dateSaved = Date()
+            newItem.id = UUID().uuidString
+            newItem.url = "https://test"
+            newItem.author = "author"
+            newItem.commentCount = 0
         }
         do {
             try viewContext.save()
