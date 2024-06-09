@@ -1,5 +1,5 @@
 //
-//  BookmarkedPost+CoreDataClass.swift
+//  PostFolder+CoreDataClass.swift
 //  LessWrong iOS
 //
 //  Created by Katyayani G. Raman on 6/8/24.
@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-@objc(BookmarkedPost)
-public class BookmarkedPost: NSManagedObject {
+@objc(PostFolder)
+public class PostFolder: NSManagedObject {
 
 }

@@ -113,7 +113,8 @@ struct MainChildView: View {
     @Environment(\.isSearching) private var isSearching
     @Binding  var selectedOption: PickerOptions
     @Namespace private var animation
-
+    @State private var showingBookmarkAlert = false // New state for alert
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State private var showingShareSheet = false
     @State private var selectedURL = ""
@@ -159,7 +160,11 @@ struct MainChildView: View {
                           }
     
                       }
-            
+            .alert("Bookmark Added", isPresented: $showingBookmarkAlert) {
+                         Button("OK", role: .cancel) { }
+                     } message: {
+                         Text("The post has been successfully bookmarked.")
+                     }
             
         }
     }
@@ -210,6 +215,21 @@ struct MainChildView: View {
             Label("Options", systemImage: "slider.horizontal.3")
         }
     }
+    
+    
+    func isPostBookmarked(postURL: String) -> Bool {
+            let fetchRequest: NSFetchRequest<BookmarkedPost> = BookmarkedPost.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "url == %@", postURL)
+            fetchRequest.fetchLimit = 1  // We only need to know if at least one exists
+
+            do {
+                let count = try viewContext.count(for: fetchRequest)
+                return count > 0
+            } catch {
+                print("Error checking bookmark status: \(error)")
+                return false
+            }
+        }
 
     private func fetchPostsIfNeeded() {
         if let limit = Int(postLimit) {
@@ -267,10 +287,8 @@ struct MainChildView: View {
                                 }
                                 .swipeActions(edge: .leading) {
                                     Button {
-                                        bookmarkPost(post: post)
-                                        // Pseudocode for bookmarking the post
-                                        // This should eventually add the post URL to a persisted collection
-                                        // Example: networkManager.bookmarkPost(post.url)
+                                        bookmarkPost(post: post) //move to class definition
+                                        showingBookmarkAlert = true
                                     } label: {
                                         Label("Bookmark", systemImage: "bookmark.fill")
                                     }
@@ -312,9 +330,12 @@ struct MainChildView: View {
                                     postFrontView(post: post)
                                         .swipeActions(edge: .trailing) {
                                                         Button {
-                                                            selectedURL = post.url
-                                                            // Pseudocode for sharing the post
-                                                            showingShareSheet = true
+                                                            if !showingShareSheet {
+                                                                selectedURL = post.url
+                                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                                    showingShareSheet = true
+                                                                }
+                                                            }
                                                         } label: {
                                                             Label("Share", systemImage: "square.and.arrow.up")
                                                         }
@@ -333,13 +354,8 @@ struct MainChildView: View {
                                                     }
                                              
                                        
-                                }
-                                .sheet(isPresented: $showingShareSheet) {
-                                    if !selectedURL.isEmpty {
-                                        ShareSheet(items: [URL(string: selectedURL) as Any])
-                                            .presentationDetents([.medium]) // Show bottom half of the screen
-                                    }
-                                }
+}
+                       
                                 .listSectionSpacing(10)
                                 .listRowBackground(getSectionColor(colorScheme: colorScheme).opacity(0.5))
                             }
@@ -357,6 +373,10 @@ struct MainChildView: View {
 //                            }
                         }
                      }
+                    .sheet(isPresented: $showingShareSheet) {
+                            ShareSheet(items: [URL(string: selectedURL) as Any])
+                                .presentationDetents([.medium]) // Show bottom half of the screen
+                    }
 //                    .overlay {
 //                        VStack {
 //                            horizontalPickerView()
@@ -452,11 +472,17 @@ struct MainChildView: View {
     func postFrontView(post: Post) -> some View {
         NavigationLink(destination: PostDetailView(postURL: post.url).environmentObject(networkManager)) {
             VStack() {
-                Text(post.title).bold()
-                    .padding(.bottom, 2)
-//                    .font(.headline)
-                    .foregroundColor(getColor(colorScheme: colorScheme))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text(post.title).bold()
+                        .padding(.bottom, 2)
+                    //                    .font(.headline)
+                        .foregroundColor(getColor(colorScheme: colorScheme))
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if (isPostBookmarked(postURL: post.url)) {
+                        Image(systemName: "bookmark.fill").foregroundStyle(.red)
+                    }
+                    Spacer()
+                }
                 Text("By \(post.author ?? post.slug ?? post.user?.username ?? "Unknown")")
 //                    .font(.subheadline)
                     .foregroundColor(.gray)
@@ -530,10 +556,5 @@ private let itemFormatter: DateFormatter = {
     formatter.timeStyle = .medium
     return formatter
 }()
-
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-}
-
 
 

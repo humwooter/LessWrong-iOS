@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A7464F62C15065200D42DDE /* PostFolder+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7464F22C15065200D42DDE /* PostFolder+CoreDataClass.swift */; };
+		4A7464F72C15065200D42DDE /* PostFolder+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7464F32C15065200D42DDE /* PostFolder+CoreDataProperties.swift */; };
+		4A7464F82C15065200D42DDE /* BookmarkedPost+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7464F42C15065200D42DDE /* BookmarkedPost+CoreDataClass.swift */; };
+		4A7464F92C15065200D42DDE /* BookmarkedPost+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7464F52C15065200D42DDE /* BookmarkedPost+CoreDataProperties.swift */; };
+		4A7464FB2C15118900D42DDE /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7464FA2C15118900D42DDE /* UserPreferences.swift */; };
 		4A8840EF2C127CCA00EB7352 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840EE2C127CCA00EB7352 /* SettingsView.swift */; };
 		4A8840F12C127CD500EB7352 /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840F02C127CD500EB7352 /* BookmarksView.swift */; };
 		4A8840F32C127E2200EB7352 /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840F22C127E2200EB7352 /* PostModel.swift */; };
-		4A8840F62C127F4600EB7352 /* BookmarkedPost+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840F42C127F4600EB7352 /* BookmarkedPost+CoreDataClass.swift */; };
-		4A8840F72C127F4600EB7352 /* BookmarkedPost+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840F52C127F4600EB7352 /* BookmarkedPost+CoreDataProperties.swift */; };
 		4A8840F92C12870600EB7352 /* ColorFuncs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840F82C12870600EB7352 /* ColorFuncs.swift */; };
+		4A8840FF2C1502CA00EB7352 /* FoldersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8840FE2C1502CA00EB7352 /* FoldersView.swift */; };
 		4A9B43B12C0D986B00309804 /* LessWrong_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B02C0D986B00309804 /* LessWrong_iOSApp.swift */; };
 		4A9B43B32C0D986B00309804 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B22C0D986B00309804 /* Persistence.swift */; };
 		4A9B43B62C0D986B00309804 /* LessWrong_iOS.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4A9B43B42C0D986B00309804 /* LessWrong_iOS.xcdatamodeld */; };
@@ -30,12 +34,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4A7464F22C15065200D42DDE /* PostFolder+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PostFolder+CoreDataClass.swift"; sourceTree = "<group>"; };
+		4A7464F32C15065200D42DDE /* PostFolder+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PostFolder+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4A7464F42C15065200D42DDE /* BookmarkedPost+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkedPost+CoreDataClass.swift"; sourceTree = "<group>"; };
+		4A7464F52C15065200D42DDE /* BookmarkedPost+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkedPost+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4A7464FA2C15118900D42DDE /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		4A8840EE2C127CCA00EB7352 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4A8840F02C127CD500EB7352 /* BookmarksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksView.swift; sourceTree = "<group>"; };
 		4A8840F22C127E2200EB7352 /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
-		4A8840F42C127F4600EB7352 /* BookmarkedPost+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkedPost+CoreDataClass.swift"; sourceTree = "<group>"; };
-		4A8840F52C127F4600EB7352 /* BookmarkedPost+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BookmarkedPost+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		4A8840F82C12870600EB7352 /* ColorFuncs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorFuncs.swift; sourceTree = "<group>"; };
+		4A8840FE2C1502CA00EB7352 /* FoldersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersView.swift; sourceTree = "<group>"; };
 		4A9B43AD2C0D986B00309804 /* LessWrong iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LessWrong iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A9B43B02C0D986B00309804 /* LessWrong_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessWrong_iOSApp.swift; sourceTree = "<group>"; };
 		4A9B43B22C0D986B00309804 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -68,8 +76,10 @@
 		4A9B43A42C0D986B00309804 = {
 			isa = PBXGroup;
 			children = (
-				4A8840F42C127F4600EB7352 /* BookmarkedPost+CoreDataClass.swift */,
-				4A8840F52C127F4600EB7352 /* BookmarkedPost+CoreDataProperties.swift */,
+				4A7464F22C15065200D42DDE /* PostFolder+CoreDataClass.swift */,
+				4A7464F32C15065200D42DDE /* PostFolder+CoreDataProperties.swift */,
+				4A7464F42C15065200D42DDE /* BookmarkedPost+CoreDataClass.swift */,
+				4A7464F52C15065200D42DDE /* BookmarkedPost+CoreDataProperties.swift */,
 				4A9B43AF2C0D986B00309804 /* LessWrong iOS */,
 				4A9B43AE2C0D986B00309804 /* Products */,
 			);
@@ -117,6 +127,7 @@
 				4ABC0F222C0FC21E009A947F /* CommentDetailView.swift */,
 				4A8840EE2C127CCA00EB7352 /* SettingsView.swift */,
 				4A8840F02C127CD500EB7352 /* BookmarksView.swift */,
+				4A8840FE2C1502CA00EB7352 /* FoldersView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -129,6 +140,7 @@
 				4ABC0F242C0FD28C009A947F /* ShareSheet.swift */,
 				4ABC0F262C11D619009A947F /* CustomPicker.swift */,
 				4A8840F22C127E2200EB7352 /* PostModel.swift */,
+				4A7464FA2C15118900D42DDE /* UserPreferences.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -203,9 +215,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A8840F62C127F4600EB7352 /* BookmarkedPost+CoreDataClass.swift in Sources */,
-				4A8840F72C127F4600EB7352 /* BookmarkedPost+CoreDataProperties.swift in Sources */,
+				4A8840FF2C1502CA00EB7352 /* FoldersView.swift in Sources */,
 				4A9B43B12C0D986B00309804 /* LessWrong_iOSApp.swift in Sources */,
+				4A7464F62C15065200D42DDE /* PostFolder+CoreDataClass.swift in Sources */,
+				4A7464F72C15065200D42DDE /* PostFolder+CoreDataProperties.swift in Sources */,
+				4A7464F82C15065200D42DDE /* BookmarkedPost+CoreDataClass.swift in Sources */,
+				4A7464F92C15065200D42DDE /* BookmarkedPost+CoreDataProperties.swift in Sources */,
 				4A8840F32C127E2200EB7352 /* PostModel.swift in Sources */,
 				4A9B43B62C0D986B00309804 /* LessWrong_iOS.xcdatamodeld in Sources */,
 				4A8840F12C127CD500EB7352 /* BookmarksView.swift in Sources */,
@@ -221,6 +236,7 @@
 				4ABC0F252C0FD28C009A947F /* ShareSheet.swift in Sources */,
 				4A8840EF2C127CCA00EB7352 /* SettingsView.swift in Sources */,
 				4A8840F92C12870600EB7352 /* ColorFuncs.swift in Sources */,
+				4A7464FB2C15118900D42DDE /* UserPreferences.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

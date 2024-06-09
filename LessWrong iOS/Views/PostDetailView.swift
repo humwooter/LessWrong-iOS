@@ -15,6 +15,7 @@ struct PostDetailView: View {
     let postURL: String
     @EnvironmentObject var networkManager: NetworkManager
     @State private var canGoBack = false
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         detailView()
@@ -22,8 +23,8 @@ struct PostDetailView: View {
             .navigationTitle("Post Detail")
             .background {
                 ZStack {
-                    LinearGradient(colors: [Color.clear, Color.brown.opacity(0.3)], startPoint: .top, endPoint: .bottom)
-                }.ignoresSafeArea()
+                    LinearGradient(colors: [getTopBackgroundColor(colorScheme: colorScheme),getBackgroundColor(colorScheme: colorScheme)], startPoint: .top, endPoint: .bottom)
+                }.ignoresSafeArea(.all)
             }
             .task {
                        await networkManager.fetchPostDetail(url: postURL)
