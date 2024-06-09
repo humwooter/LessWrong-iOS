@@ -118,6 +118,7 @@ struct MainChildView: View {
     
     @State private var showingShareSheet = false
     @State private var selectedURL = ""
+    @State private var isBookmarked = false
     
     private var shouldPresentShareSheet: Binding<Bool> {
         Binding(
@@ -160,12 +161,11 @@ struct MainChildView: View {
                           }
     
                       }
-            .alert("Bookmark Added", isPresented: $showingBookmarkAlert) {
-                         Button("OK", role: .cancel) { }
-                     } message: {
-                         Text("The post has been successfully bookmarked.")
-                     }
-            
+            .alert(isBookmarked ? "Bookmark Added" : "Bookmark Removed", isPresented: $showingBookmarkAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(isBookmarked ? "The post has been successfully bookmarked." : "The bookmark has been removed.")
+            }
         }
     }
     
@@ -268,7 +268,7 @@ struct MainChildView: View {
             if selectedOption == .bookmark {
                 BookmarksView()
             } else if selectedOption == .settings {
-                BookmarksView()
+                SettingsView()
             } else {
                 List {
                     ForEach(filteredPosts().prefix(25), id: \.id) { post in
@@ -287,7 +287,7 @@ struct MainChildView: View {
                                 }
                                 .swipeActions(edge: .leading) {
                                     Button {
-                                        bookmarkPost(post: post) //move to class definition
+                                        isBookmarked = bookmarkPost(post: post) //move to class definition
                                         showingBookmarkAlert = true
                                     } label: {
                                         Label("Bookmark", systemImage: "bookmark.fill")

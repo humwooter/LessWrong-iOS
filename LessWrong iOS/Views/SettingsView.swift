@@ -11,7 +11,6 @@ import SwiftUI
 
 struct SettingsView: View {
     var body: some View {
-        NavigationView {
             List {
                 Section(header: Text("General")) {
                  
@@ -19,5 +18,4 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
-    }
 }

@@ -18,6 +18,7 @@ extension PostFolder {
 
     @NSManaged public var id: UUID
     @NSManaged public var name: String?
+    @NSManaged public var order: Int16
     @NSManaged public var relationship: NSSet?
 
 }
