@@ -11,11 +11,6 @@ import WebKit
 import UIKit
 
 
-
-
-
-
-
 enum PickerOptions: String, CaseIterable {
     case bookmark = "Bookmark"
     case lessWrong = "LW"

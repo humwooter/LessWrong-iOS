@@ -12,7 +12,10 @@ struct FoldersView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
         entity: PostFolder.entity(),
-        sortDescriptors: [NSSortDescriptor(keyPath: \PostFolder.name, ascending: true)]
+        sortDescriptors: [
+            NSSortDescriptor(keyPath: \PostFolder.order, ascending: true),
+            NSSortDescriptor(keyPath: \PostFolder.name, ascending: true) // Secondary sort by name
+        ]
     ) var folders: FetchedResults<PostFolder>
     @Binding var selectedPost: BookmarkedPost?
     @State private var newFolderName: String = ""
@@ -21,7 +24,7 @@ struct FoldersView: View {
     @State private var editingFolder: PostFolder?
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
-
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -32,7 +35,7 @@ struct FoldersView: View {
                     Spacer()
                 }
                 .padding()
-
+                
                 List {
                     Section(header: Text("Folders")) {
                         ForEach(folders.filter {
@@ -52,8 +55,8 @@ struct FoldersView: View {
                                 }
                             }
                         }
-                        .onDelete(perform: deleteFolders)
                         .onMove(perform: moveFolders)
+                        .onDelete(perform: deleteFolders)
                     }
                     .scrollContentBackground(.hidden)
                     .listSectionSpacing(10)
@@ -98,26 +101,25 @@ struct FoldersView: View {
     }
     
     private func selectFolder(folder: PostFolder) {
-           if let post = selectedPost {
-               // Check if the selected post already has a folder ID
-               if let currentFolderId = post.folderId, let currentFolder = folders.first(where: { $0.id == currentFolderId }) {
-                   currentFolder.removeFromRelationship(post)
-                   post.folderId = nil
-               }
-               else {
-                   // Set the new folder ID
-                   selectedPost?.folderId = folder.id
-                   folder.addToRelationship(post)
-               }
-               // Save the context
-               try? viewContext.save()
-               
-               // Dismiss the folder sheet
-               isPresentingNewFolderSheet = false
-           }
-           presentationMode.wrappedValue.dismiss()
-       }
-
+        if let post = selectedPost {
+            // Check if the selected post already has a folder ID
+            if let currentFolderId = post.folderId, let currentFolder = folders.first(where: { $0.id == currentFolderId }) {
+                currentFolder.removeFromRelationship(post)
+                post.folderId = nil
+            } else {
+                // Set the new folder ID
+                selectedPost?.folderId = folder.id
+                folder.addToRelationship(post)
+            }
+            // Save the context
+            try? viewContext.save()
+            
+            // Dismiss the folder sheet
+            isPresentingNewFolderSheet = false
+        }
+        presentationMode.wrappedValue.dismiss()
+    }
+    
     private func createFolder() {
         guard !newFolderName.isEmpty else { return }
         
@@ -127,18 +129,18 @@ struct FoldersView: View {
             let newFolder = PostFolder(context: viewContext)
             newFolder.id = UUID()
             newFolder.name = newFolderName
-            newFolder.order = Int16(folders.count ?? 0)
+            newFolder.order = Int16(folders.count)
         }
-
+        
         try? viewContext.save()
         newFolderName = ""
     }
-
+    
     private func deleteFolder(folder: PostFolder) {
         viewContext.delete(folder)
         try? viewContext.save()
     }
-
+    
     private func deleteFolders(at offsets: IndexSet) {
         for index in offsets {
             let folder = folders[index]
@@ -146,16 +148,32 @@ struct FoldersView: View {
         }
         try? viewContext.save()
     }
-
+    
     private func moveFolders(from source: IndexSet, to destination: Int) {
+        print("ENTERED FUNC")
         var revisedFolders = folders.map { $0 }
         revisedFolders.move(fromOffsets: source, toOffset: destination)
         
-        // Update the order in CoreData
-        for reverseIndex in stride(from: revisedFolders.count - 1, through: 0, by: -1) {
-            revisedFolders[reverseIndex].order = Int16(reverseIndex)
+        print("SOURCE: \(source)")
+        print("DESTINATION: \(destination)")
+
+        // Reset the order based on the new array indices
+        for index in revisedFolders.indices {
+            revisedFolders[index].order = Int16(index)
+            // Save the updated order to CoreData
+            do {
+                try viewContext.save()
+            } catch {
+                print("Failed to save context after moving folders: \(error)")
+            }
         }
-        try? viewContext.save()
+        
+//        // Save the updated order to CoreData
+//        do {
+//            try viewContext.save()
+//        } catch {
+//            print("Failed to save context after moving folders: \(error)")
+//        }
     }
 }
 
@@ -213,3 +231,5 @@ struct NewFolderSheet: View {
         }
     }
 }
+
+
