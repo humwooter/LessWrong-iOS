@@ -1,13 +1,15 @@
 import Foundation
+import CoreData
 import SwiftUI
 
 class NetworkManager: ObservableObject {
+    @Environment(\.managedObjectContext) private var viewContext
     @Published var posts: [String: Post] = [:]
     @Published var selectedPost: Post?
     @Published var recentComments: [String: Comment] = [:]
     let lesswrongEndpoint = "https://www.lesswrong.com/graphql"
     @Published var currentEndpoint: String = "https://www.lesswrong.com/graphql"
-
+    
     func fetchPosts(queryType: QueryType, searchText: String, username: String = "", limit: Int? = nil) async {
         print("QUERY TYPE: \(queryType)")
         print("USERNAME: \(username)")
@@ -15,7 +17,7 @@ class NetworkManager: ObservableObject {
         let query: String
         print("RAW VALUE: \(queryType.rawValue)")
         switch queryType {
-        case .topPosts, .newPosts:
+        case .topPosts, .newPosts, .bookmarkedPosts:
             query = """
             query {
               posts(input: {terms: {view: "\(queryType.rawValue)", limit: \(limit ?? 10)}}) {
@@ -80,26 +82,26 @@ class NetworkManager: ObservableObject {
             }
             """
         }
-
+        
         guard var urlComponents = URLComponents(string: currentEndpoint) else { return }
         urlComponents.queryItems = [URLQueryItem(name: "query", value: query)]
         guard let url = urlComponents.url else { return }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.cachePolicy = .returnCacheDataElseLoad
-
+        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: ["query": query], options: [])
         } catch {
             print("Error serializing JSON: \(error)")
             return
         }
-
+        
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-
+            
             // Print response for debugging
             if let httpResponse = response as? HTTPURLResponse {
                 print("HTTP Status Code: \(httpResponse.statusCode)")
@@ -107,13 +109,13 @@ class NetworkManager: ObservableObject {
             if let jsonString = String(data: data, encoding: .utf8) {
                 print("Response JSON: \(jsonString)")
             }
-
+            
             try handleResponse(data: data, queryType: queryType, searchText: searchText)
         } catch {
             print("Error making network request: \(error)")
         }
     }
-
+    
     private func handleResponse(data: Data, queryType: QueryType, searchText: String) throws {
         switch queryType {
         case .comments:
@@ -139,7 +141,7 @@ class NetworkManager: ObservableObject {
             }
         }
     }
-
+    
     func fetchPostDetail(url: String) async {
         let query = """
         query {
@@ -167,26 +169,26 @@ class NetworkManager: ObservableObject {
             }
         }
         """
-
+        
         guard var urlComponents = URLComponents(string: currentEndpoint) else { return }
         urlComponents.queryItems = [URLQueryItem(name: "query", value: query)]
         guard let url = urlComponents.url else { return }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.cachePolicy = .returnCacheDataElseLoad
-
+        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: ["query": query], options: [])
         } catch {
             print("Error serializing JSON: \(error)")
             return
         }
-
+        
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
-
+            
             // Print response for debugging
             if let httpResponse = response as? HTTPURLResponse {
                 print("HTTP Status Code: \(httpResponse.statusCode)")
@@ -194,7 +196,7 @@ class NetworkManager: ObservableObject {
             if let jsonString = String(data: data, encoding: .utf8) {
                 print("Response JSON: \(jsonString)")
             }
-
+            
             let responseData = try JSONDecoder().decode(GraphQLResponse<PostDetailResponse>.self, from: data)
             DispatchQueue.main.async {
                 let post = responseData.data.post.result
@@ -205,12 +207,25 @@ class NetworkManager: ObservableObject {
             print("Error making network request: \(error)")
         }
     }
-
+    
+    private func isPostBookmarked(postURL: String) -> Bool {
+            let fetchRequest: NSFetchRequest<BookmarkedPost> = BookmarkedPost.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "url == %@", postURL)
+            
+            do {
+                let results = try viewContext.fetch(fetchRequest)
+                return !results.isEmpty
+            } catch {
+                print("Failed to fetch BookmarkedPost: \(error)")
+                return false
+            }
+        }
+    
     func sortedPosts(by queryType: QueryType, searchText: String = "") -> [Post] {
         return posts.values.sorted { post1, post2 in
             let matchesSearchText1: Bool
             let matchesSearchText2: Bool
-
+            
             if queryType == .userPosts {
                 matchesSearchText1 = searchText.isEmpty || post1.author?.lowercased().contains(searchText.lowercased()) ?? (searchText.lowercased() == "unknown" || searchText.lowercased() == "anonymous")
                 matchesSearchText2 = searchText.isEmpty || post2.author?.lowercased().contains(searchText.lowercased()) ?? (searchText.lowercased() == "unknown" || searchText.lowercased() == "anonymous")
@@ -218,11 +233,11 @@ class NetworkManager: ObservableObject {
                 matchesSearchText1 = searchText.isEmpty || post1.title.lowercased().contains(searchText.lowercased())
                 matchesSearchText2 = searchText.isEmpty || post2.title.lowercased().contains(searchText.lowercased())
             }
-
+            
             if matchesSearchText1 != matchesSearchText2 {
                 return matchesSearchText1
             }
-
+            
             switch queryType {
             case .newPosts:
                 guard let date1 = post1.date, let date2 = post2.date else { return false }
@@ -230,6 +245,15 @@ class NetworkManager: ObservableObject {
             case .userPosts:
                 guard let voteCount1 = post1.voteCount, let voteCount2 = post2.voteCount else { return false }
                 return voteCount1 > voteCount2
+            case .bookmarkedPosts:
+                guard let date1 = post1.date, let date2 = post2.date else { return false }
+                return date1 > date2
+//                let isBookmarked1 = isPostBookmarked(postURL: post1.url)
+//                let isBookmarked2 = isPostBookmarked(postURL: post2.url)
+//                if isBookmarked1 != isBookmarked2 {
+//                    return isBookmarked1
+//                }
+//                return post1.title.lowercased() < post2.title.lowercased()
             default:
                 guard let voteCount1 = post1.voteCount, let voteCount2 = post2.voteCount else { return false }
                 return voteCount1 > voteCount2

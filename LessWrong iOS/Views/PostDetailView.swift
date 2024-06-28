@@ -10,47 +10,46 @@ import SwiftUI
 import WebKit
 import UIKit
 
-
 struct PostDetailView: View {
     let postURL: String
     @EnvironmentObject var networkManager: NetworkManager
     @State private var canGoBack = false
+    @State private var isLoading = false
+    @State private var pageTitle = ""
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        detailView()
-            .padding()
-            .navigationTitle("Post Detail")
-            .background {
-                ZStack {
-                    LinearGradient(colors: [getTopBackgroundColor(colorScheme: colorScheme),getBackgroundColor(colorScheme: colorScheme)], startPoint: .top, endPoint: .bottom)
-                }.ignoresSafeArea(.all)
-            }
-            .task {
-                       await networkManager.fetchPostDetail(url: postURL)
-                   }
-    }
-
-    @ViewBuilder
-    func detailView() -> some View {
-        if let url = URL(string: postURL) {
-            VStack {
+        VStack {
+            HStack {
                 if canGoBack {
-                    Button(action: goBack) {
+                    Button(action: {
+                        NotificationCenter.default.post(name: Notification.Name("goBack"), object: nil)
+                    }) {
                         Image(systemName: "chevron.left")
                             .padding()
                     }
                 }
-                WebView(url: url, backgroundColor: .black, canGoBack: $canGoBack)
+                Text(pageTitle)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                Spacer()
+                if isLoading {
+                    ProgressView()
+                        .padding()
+                }
             }
-        } else {
-            Text("Invalid URL")
-                .foregroundColor(.red)
+            WebViewContainer(content: nil, url: URL(string: postURL), backgroundColor: .black)
         }
-    }
-
-    private func goBack() {
-        NotificationCenter.default.post(name: Notification.Name("goBack"), object: nil)
+        .padding()
+        .navigationTitle("Post Detail")
+        .background {
+            ZStack {
+                LinearGradient(colors: [getTopBackgroundColor(colorScheme: colorScheme), getBackgroundColor(colorScheme: colorScheme)], startPoint: .top, endPoint: .bottom)
+            }.ignoresSafeArea(.all)
+        }
+        .task {
+            await networkManager.fetchPostDetail(url: postURL)
+        }
     }
 
     func formattedDate(from dateString: String?) -> String {

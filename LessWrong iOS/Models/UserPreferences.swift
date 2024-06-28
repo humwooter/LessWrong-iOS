@@ -4,7 +4,6 @@
 //
 //  Created by Katyayani G. Raman on 6/8/24.
 //
-
 import Foundation
 import SwiftUI
 import Combine
@@ -12,6 +11,8 @@ import Combine
 class UserPreferences: ObservableObject, Codable {
     enum CodingKeys: CodingKey {
         case accentColor
+        case newPostsCount
+        case showEAForum
     }
 
     @Published var accentColor: Color {
@@ -19,19 +20,37 @@ class UserPreferences: ObservableObject, Codable {
             UserDefaults.standard.setColor(color: accentColor, forKey: "accentColor")
         }
     }
+    
+    @Published var newPostsCount: Int {
+        didSet {
+            UserDefaults.standard.set(newPostsCount, forKey: "newPostsCount")
+        }
+    }
+    
+    @Published var showEAForum: Bool {
+        didSet {
+            UserDefaults.standard.set(showEAForum, forKey: "showEAForum")
+        }
+    }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.accentColor = try container.decode(Color.self, forKey: .accentColor)
+        self.newPostsCount = try container.decode(Int.self, forKey: .newPostsCount)
+        self.showEAForum = try container.decode(Bool.self, forKey: .showEAForum)
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(accentColor, forKey: .accentColor)
+        try container.encode(newPostsCount, forKey: .newPostsCount)
+        try container.encode(showEAForum, forKey: .showEAForum)
     }
 
     init() {
         self.accentColor = UserDefaults.standard.color(forKey: "accentColor") ?? .red // Default color
+        self.newPostsCount = UserDefaults.standard.integer(forKey: "newPostsCount")
+        self.showEAForum = UserDefaults.standard.bool(forKey: "showEAForum")
     }
 }
 

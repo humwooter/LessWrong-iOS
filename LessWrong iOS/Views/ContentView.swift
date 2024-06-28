@@ -11,6 +11,7 @@ import WebKit
 import UIKit
 
 
+
 enum PickerOptions: String, CaseIterable {
     case bookmark = "Bookmark"
     case lessWrong = "LW"
@@ -31,6 +32,9 @@ struct ContentView: View {
             // Your existing view code
             MainView()
                 .environmentObject(networkManager)
+                .onAppear {
+                    deleteOldPosts()
+                }
         .background {
             ZStack {
                 LinearGradient(colors: [getTopBackgroundColor(),getBackgroundColor()], startPoint: .top, endPoint: .bottom)
@@ -39,7 +43,60 @@ struct ContentView: View {
 
         }
     
+    func deletePost(post: BookmarkedPost) {
+        let mainContext = PersistenceController.shared.container.viewContext
+        
+        mainContext.performAndWait {
+            let fetchRequest: NSFetchRequest<BookmarkedPost> = BookmarkedPost.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "url == %@", post.url ?? "")
+            
+            do {
+                let fetchedEntries = try mainContext.fetch(fetchRequest)
+                guard let entryToDeleteInContext = fetchedEntries.first else {
+                    print("Failed to fetch entry in main context")
+                    return
+                }
+                
+                // Remove the post from the folder's relationship
+                if let folder = entryToDeleteInContext.relationship {
+                    folder.removeFromRelationship(entryToDeleteInContext)
+                }
+                
+                // Perform the entry deletion
+                mainContext.delete(entryToDeleteInContext)
+                
+                try mainContext.save()
+                print("Entry successfully deleted")
+            } catch {
+                print("Failed to save main context: \(error)")
+            }
+        }
+    }
+
     
+    //removes entries that are older than 10 days old
+    func deleteOldPosts() {
+        let viewContext = PersistenceController.shared.container.viewContext
+
+        let tenDaysAgo = Calendar.current.date(byAdding: .day, value: -10, to: Date())
+        
+        let fetchRequest: NSFetchRequest<BookmarkedPost> = BookmarkedPost.fetchRequest()
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "isRemoved == %@", NSNumber(value: true)),
+            NSPredicate(format: "dateSaved < %@", tenDaysAgo! as CVarArg)
+        ])
+        
+        do {
+            let oldPosts = try viewContext.fetch(fetchRequest)
+            for post in oldPosts {
+                deletePost(post: post)
+            }
+            try viewContext.save()
+        } catch let error {
+            print("Failed to delete old entries: \(error)")
+        }
+    }
+    //func to return top color:
     func getTopBackgroundColor() -> Color {
         if colorScheme == .light {
             return Color("Background Color Light Light")
@@ -52,6 +109,7 @@ struct ContentView: View {
         if colorScheme == .dark {
             return .brown.opacity(0.2)
         } else {
+            //make this a gradient instead
             return Color("Background Color Light Dark")
         }
     }
@@ -61,6 +119,8 @@ struct ContentView: View {
 struct MainView: View {
     @EnvironmentObject var networkManager : NetworkManager
     @ObservedObject var searchModel = SearchModel()
+    @ObservedObject private var userPreferences = UserPreferences()
+
     @State private var selectedOption: PickerOptions = .lessWrong
     var showSearch: Binding<Bool> {
           Binding<Bool>(
@@ -81,6 +141,7 @@ struct MainView: View {
         MainChildView(selectedOption: $selectedOption)
             .accentColor(.red)
             .environmentObject(networkManager)
+            .environmentObject(userPreferences)
             .environmentObject(searchModel)
             .searchable(text: $searchModel.searchText, tokens: $searchModel.tokens, isPresented: showSearch) { token in
                 switch token {
@@ -98,6 +159,7 @@ struct MainView: View {
 }
 
 struct MainChildView: View {
+    @EnvironmentObject var userPreferences: UserPreferences
     @EnvironmentObject var networkManager: NetworkManager
     @Environment(\.colorScheme) var colorScheme
     @State private var selectedQueryType: QueryType = .topPosts
@@ -109,6 +171,8 @@ struct MainChildView: View {
     @Binding  var selectedOption: PickerOptions
     @Namespace private var animation
     @State private var showingBookmarkAlert = false // New state for alert
+    @State private var showingShareAlert = false // New state for alert
+
     @Environment(\.managedObjectContext) private var viewContext
     
     @State private var showingShareSheet = false
@@ -161,6 +225,11 @@ struct MainChildView: View {
             } message: {
                 Text(isBookmarked ? "The post has been successfully bookmarked." : "The bookmark has been removed.")
             }
+            .alert("Link copied", isPresented: $showingShareAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("The post link has been copied to your clipboard")
+            }
         }
     }
     
@@ -175,6 +244,7 @@ struct MainChildView: View {
             Picker("Query Type", selection: $selectedQueryType) {
                 Text("Top Posts").tag(QueryType.topPosts)
                 Text("New Posts").tag(QueryType.newPosts)
+                Text("Bookmarked Posts").tag(QueryType.bookmarkedPosts)
             }
             .onChange(of: selectedQueryType) { _ in
                 if !isSearching {
@@ -231,7 +301,9 @@ struct MainChildView: View {
             Task {
                 // Preserve searchText before fetching
 //                let currentSearchText = searchModel.searchText
-                await networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
+                if selectedQueryType != .bookmarkedPosts {
+                    await networkManager.fetchPosts(queryType: selectedQueryType, searchText: searchModel.searchText, username: searchModel.searchText, limit: limit)
+                }
                 // Restore searchText after fetching
 //                searchModel.searchText = currentSearchText
             }
@@ -264,6 +336,7 @@ struct MainChildView: View {
                 BookmarksView()
             } else if selectedOption == .settings {
                 SettingsView()
+                    .environmentObject(userPreferences)
             } else {
                 List {
                     ForEach(filteredPosts().prefix(25), id: \.id) { post in
@@ -273,7 +346,9 @@ struct MainChildView: View {
                                     Button {
                                         selectedURL = post.url
                                         // Pseudocode for sharing the post
-                                        showingShareSheet = true
+//                                        showingShareSheet = true
+                                        copyToClipboard(text: selectedURL)
+                                        showingShareAlert = true
                                     } label: {
                                         Label("Share", systemImage: "square.and.arrow.up")
                                     }
@@ -447,17 +522,17 @@ struct MainChildView: View {
             }
             
             
-            Button {
-                searchModel.tokens.append(.comments)
-                selectedQueryType = .comments
-            } label: {
-                HStack {
-                    Image(systemName: "bubble.fill").foregroundStyle(Color.red)
-                        .padding(.horizontal, 5)
-                    
-                    Text("Comment").foregroundStyle(getColor(colorScheme: colorScheme))
-                }
-            }
+//            Button {
+//                searchModel.tokens.append(.comments)
+//                selectedQueryType = .comments
+//            } label: {
+//                HStack {
+//                    Image(systemName: "bubble.fill").foregroundStyle(Color.red)
+//                        .padding(.horizontal, 5)
+//                    
+//                    Text("Comment").foregroundStyle(getColor(colorScheme: colorScheme))
+//                }
+//            }
             
         }
         

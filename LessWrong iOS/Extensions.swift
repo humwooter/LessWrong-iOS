@@ -10,6 +10,12 @@ import SwiftUI
 import CoreData
 
 
+
+
+func copyToClipboard(text: String) {
+        UIPasteboard.general.string = text
+    }
+
 struct CustomFontKey: EnvironmentKey {
     static let defaultValue: Font = .custom("Georgia", size: UIFont.systemFontSize)
 }

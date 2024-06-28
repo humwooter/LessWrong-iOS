@@ -8,6 +8,8 @@
 import SwiftUI
 import CoreData
 
+
+
 struct FoldersView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
@@ -19,8 +21,9 @@ struct FoldersView: View {
     ) var folders: FetchedResults<PostFolder>
     @Binding var selectedPost: BookmarkedPost?
     @State private var newFolderName: String = ""
-    @State private var searchText: String = ""
     @State private var isPresentingNewFolderSheet = false
+
+    @State private var searchText: String = ""
     @State private var editingFolder: PostFolder?
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
@@ -99,6 +102,8 @@ struct FoldersView: View {
             }
         }
     }
+    
+    // write a function to return true:
     
     private func selectFolder(folder: PostFolder) {
         if let post = selectedPost {

@@ -1,0 +1,22 @@
+func handleDrop(url: URL, folder: PostFolder) {
+    print("entered handle drop")
+
+    // Create a fetch request for BookmarkedPost
+    let fetchRequest: NSFetchRequest<BookmarkedPost> = BookmarkedPost.fetchRequest()
+    
+    // Set the predicate to filter by the url
+    fetchRequest.predicate = NSPredicate(format: "url == %@", url.absoluteString)
+    
+    do {
+        // Perform the fetch request
+        let results = try viewContext.fetch(fetchRequest)
+        
+        // Check if a post was found
+        if let post = results.first {
+            post.folderId = folder.id
+            try viewContext.save()
+        }
+    } catch {
+        print("Failed to fetch BookmarkedPost: \(error)")
+    }
+}

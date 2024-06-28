@@ -33,6 +33,7 @@ enum FilterTokens: String, Identifiable, Hashable, CaseIterable {
 enum QueryType: String, Identifiable, Hashable, CaseIterable {
     case topPosts = "top"
     case newPosts = "new"
+    case bookmarkedPosts = "bookmarkedPosts"
     case userPosts = "user"
     case comments = "comments"
     
@@ -48,6 +49,8 @@ enum QueryType: String, Identifiable, Hashable, CaseIterable {
             return "user"
         case .comments:
             return "comment"
+        case .bookmarkedPosts:
+            return "bookmarkedPosts"
         }
     }
 }
