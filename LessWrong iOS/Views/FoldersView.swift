@@ -27,6 +27,7 @@ struct FoldersView: View {
     @State private var editingFolder: PostFolder?
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
+    @Binding var accentColor: Color
     
     var body: some View {
         NavigationView {
@@ -44,7 +45,7 @@ struct FoldersView: View {
                         ForEach(folders.filter {
                             searchText.isEmpty ? true : $0.name?.localizedCaseInsensitiveContains(searchText) ?? false
                         }, id: \.self) { folder in
-                            FolderRow(name: folder.name ?? "Unnamed", icon: "folder", count: folder.relationship?.count ?? 0, folderId: folder.id, selectFolder: {
+                            folderRow(name: folder.name ?? "Unnamed", icon: "folder", count: folder.relationship?.count ?? 0, folderId: folder.id, selectFolder: {
                                 selectFolder(folder: folder)
                             })
                             .contextMenu {
@@ -69,11 +70,11 @@ struct FoldersView: View {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("Cancel") {
                             presentationMode.wrappedValue.dismiss()
-                        }.foregroundStyle(.red)
+                        }.foregroundStyle(accentColor)
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         EditButton()
-                            .foregroundColor(.red)
+                            .foregroundColor(accentColor)
                     }
                     ToolbarItem(placement: .bottomBar) {
                         HStack {
@@ -83,7 +84,7 @@ struct FoldersView: View {
                                 isPresentingNewFolderSheet = true
                             }) {
                                 Image(systemName: "folder.badge.plus")
-                                    .foregroundColor(.red)
+                                    .foregroundColor(accentColor)
                             }
                             Spacer()
                         }
@@ -98,7 +99,7 @@ struct FoldersView: View {
                 }.ignoresSafeArea(.all)
             }
             .sheet(isPresented: $isPresentingNewFolderSheet) {
-                NewFolderSheet(isPresented: $isPresentingNewFolderSheet, newFolderName: $newFolderName, createFolder: createFolder, editingFolder: $editingFolder)
+                NewFolderSheet(isPresented: $isPresentingNewFolderSheet, newFolderName: $newFolderName, createFolder: createFolder, editingFolder: $editingFolder, accentColor: $accentColor)
             }
         }
     }
@@ -180,6 +181,22 @@ struct FoldersView: View {
 //            print("Failed to save context after moving folders: \(error)")
 //        }
     }
+    @ViewBuilder
+       func folderRow(name: String, icon: String, count: Int, folderId: UUID?, selectFolder: @escaping () -> Void) -> some View {
+            HStack {
+            Image(systemName: icon)
+                .foregroundColor(accentColor)
+            Text(name)
+            Spacer()
+            Text("\(count)")
+                .foregroundColor(.gray)
+            Button(action: selectFolder) {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(.green)
+            }
+        }
+        .padding(.vertical, 5)
+    }
 }
 
 struct FolderRow: View {
@@ -188,11 +205,12 @@ struct FolderRow: View {
     let count: Int
     let folderId: UUID?
     let selectFolder: () -> Void
+    let color: Color = Color.red
 
     var body: some View {
         HStack {
             Image(systemName: icon)
-                .foregroundColor(.red)
+                .foregroundColor(color)
             Text(name)
             Spacer()
             Text("\(count)")
@@ -211,6 +229,7 @@ struct NewFolderSheet: View {
     @Binding var newFolderName: String
     let createFolder: () -> Void
     @Binding var editingFolder: PostFolder?
+    @Binding var accentColor: Color
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -232,7 +251,7 @@ struct NewFolderSheet: View {
                     LinearGradient(colors: [getTopBackgroundColor(colorScheme: colorScheme), getBackgroundColor(colorScheme: colorScheme)], startPoint: .top, endPoint: .bottom)
                 }.ignoresSafeArea(.all)
             }
-            .foregroundStyle(.red)
+            .foregroundStyle(accentColor)
         }
     }
 }

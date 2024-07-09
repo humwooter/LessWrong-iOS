@@ -21,12 +21,7 @@ class UserPreferences: ObservableObject, Codable {
         }
     }
     
-    @Published var newPostsCount: Int {
-        didSet {
-            UserDefaults.standard.set(newPostsCount, forKey: "newPostsCount")
-        }
-    }
-    
+    @Published var newPostsCount: Double = 10
     @Published var showEAForum: Bool {
         didSet {
             UserDefaults.standard.set(showEAForum, forKey: "showEAForum")
@@ -36,7 +31,7 @@ class UserPreferences: ObservableObject, Codable {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.accentColor = try container.decode(Color.self, forKey: .accentColor)
-        self.newPostsCount = try container.decode(Int.self, forKey: .newPostsCount)
+        self.newPostsCount = try container.decode(Double.self, forKey: .newPostsCount)
         self.showEAForum = try container.decode(Bool.self, forKey: .showEAForum)
     }
 
@@ -49,7 +44,7 @@ class UserPreferences: ObservableObject, Codable {
 
     init() {
         self.accentColor = UserDefaults.standard.color(forKey: "accentColor") ?? .red // Default color
-        self.newPostsCount = UserDefaults.standard.integer(forKey: "newPostsCount")
+        self.newPostsCount = Double(UserDefaults.standard.integer(forKey: "newPostsCount") ?? 10)
         self.showEAForum = UserDefaults.standard.bool(forKey: "showEAForum")
     }
 }

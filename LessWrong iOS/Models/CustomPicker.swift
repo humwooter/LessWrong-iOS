@@ -16,16 +16,21 @@ struct HorizontalPicker: View {
 
     @State private var underlineWidth: CGFloat = 0
     @State private var underlineX: CGFloat = 0
-    var selectedColor = Color.red
+    @Binding var showEAForum: Bool
+    @Binding var accentColor: Color
     @Environment(\.colorScheme) var colorScheme
 
+    
     var body: some View {
         var unselectedColor: Color {
             return colorScheme == .dark ? Color.white : Color.black
         }
+        let options = showEAForum ? PickerOptions.allCases : PickerOptions.allCases.filter { $0 != .effectiveAltruism }
+
+        
         VStack {
             HStack(alignment: .center) {
-                ForEach(PickerOptions.allCases, id: \.self) { option in
+                ForEach(options, id: \.self) { option in
                     GeometryReader { geo in
                         Button(action: {
                             withAnimation(.interpolatingSpring(stiffness: 200, damping: 20)) {
@@ -37,20 +42,20 @@ struct HorizontalPicker: View {
                             VStack {
                                 if option.rawValue != "Settings" && option.rawValue != "Search" && option.rawValue != "Bookmark" {
                                     Text(option.rawValue)
-                                        .foregroundColor(selectedOption == option ? selectedColor : unselectedColor)
+                                        .foregroundColor(selectedOption == option ? accentColor : unselectedColor)
                                 } else if option.rawValue == "Search" {
                                     Image(systemName: "magnifyingglass")
-                                        .foregroundColor(selectedOption == option ? selectedColor : unselectedColor)
+                                        .foregroundColor(selectedOption == option ? accentColor : unselectedColor)
                                 } else if option.rawValue == "Bookmark" {
                                     Image(systemName: "bookmark.fill")
-                                        .foregroundColor(selectedOption == option ? selectedColor : unselectedColor)
+                                        .foregroundColor(selectedOption == option ? accentColor : unselectedColor)
                                 } else {
                                     Image(systemName: "gearshape.fill")
-                                        .foregroundColor(selectedOption == option ? selectedColor : unselectedColor)
+                                        .foregroundColor(selectedOption == option ? accentColor : unselectedColor)
                                 }
                                 if selectedOption == option {
                                     Circle()
-                                        .fill(selectedColor)
+                                        .fill(accentColor)
                                         .frame(width: 6, height: 6)
                                         .offset(y: 4)
                                         .matchedGeometryEffect(id: "underline", in: animation)
@@ -78,5 +83,7 @@ struct HorizontalPicker: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .animation(.interpolatingSpring(stiffness: 200, damping: 20), value: options)
+
     }
 }

@@ -54,7 +54,7 @@ struct BookmarksView: View {
     @State var droppedTasks : [String] = []
     @State var targeted: [UUID : Bool] = [:]
     @State var isEditing: [UUID: Bool] = [:]
-
+    @EnvironmentObject var userPreferences: UserPreferences
     
     @State private var isPresentingNewFolderSheet = false
     
@@ -65,9 +65,10 @@ struct BookmarksView: View {
                     recentlyDeletedView()
                 } label: {
                     HStack {
-                        Label("Recently Deleted", systemImage: "trash")
+                        Image(systemName: "trash").foregroundStyle(.red)
+                        Text("Recently Deleted").foregroundStyle(getColor(colorScheme: colorScheme))
                         Spacer()
-                    }.frame(maxWidth: .infinity).padding(.horizontal)
+                    }.frame(maxWidth: .infinity)
                 }
 //                .listSectionSpacing(10)
                 .scrollContentBackground(.hidden)
@@ -80,7 +81,7 @@ struct BookmarksView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     EditButton()
-                        .foregroundColor(.red)
+                        .foregroundStyle(userPreferences.accentColor)
                 }
                 
                 ToolbarItem(placement: .bottomBar) {
@@ -91,7 +92,7 @@ struct BookmarksView: View {
                             isPresentingNewFolderSheet = true
                         }) {
                             Image(systemName: "folder.badge.plus")
-                                .foregroundColor(.red)
+                            .foregroundStyle(userPreferences.accentColor)
                         }
                         Spacer()
                     }
@@ -99,10 +100,10 @@ struct BookmarksView: View {
             }
             .environment(\.editMode, $editMode)
             .fullScreenCover(isPresented: $showingFoldersSheet) {
-                FoldersView(selectedPost: $selectedPost)
+                FoldersView(selectedPost: $selectedPost, accentColor: $userPreferences.accentColor)
             }
             .sheet(isPresented: $isPresentingNewFolderSheet) {
-                NewFolderSheet(isPresented: $isPresentingNewFolderSheet, newFolderName: $newFolderName, createFolder: createFolder, editingFolder: $editingFolder)
+                NewFolderSheet(isPresented: $isPresentingNewFolderSheet, newFolderName: $newFolderName, createFolder: createFolder, editingFolder: $editingFolder, accentColor: $userPreferences.accentColor)
             }            
             .alert(isPresented: $showingDeleteConfirmation) {
                 Alert(
@@ -261,7 +262,7 @@ struct BookmarksView: View {
                             } label: {
                                 Label("Recover", systemImage: "arrow.up")
                             }
-                            .tint(.red)
+                            .tint(userPreferences.accentColor)
                         }
                 }
                 .contextMenu {
@@ -278,6 +279,9 @@ struct BookmarksView: View {
                 .scrollContentBackground(.hidden)
                 .listRowBackground(getSectionColor(colorScheme: colorScheme).opacity(0.5))
             }
+        }
+        .onAppear {
+            
         }
         .scrollContentBackground(.hidden)
         .background {
@@ -317,7 +321,7 @@ struct BookmarksView: View {
                                 } label: {
                                     Label("Add to Folder", systemImage: "folder")
                                 }
-                                .tint(.red)
+                                .tint(userPreferences.accentColor)
                             }
                     }
                     .listSectionSpacing(10)
@@ -407,8 +411,8 @@ struct BookmarksView: View {
     func folderRowView(folder: PostFolder?, name: String?) -> some View {
         if let folder = folder {
             HStack {
-                Image(systemName: "folder.fill")
-                    .foregroundColor(targeted[folder.id] == true ? .green : .red)
+                Image(systemName: "folder")
+                    .foregroundColor(targeted[folder.id] == true ? .green : userPreferences.accentColor.opacity(1))
         
                  Text(folder.name ?? "Unnamed") .foregroundColor(getColor(colorScheme: colorScheme))
                 Spacer()
@@ -426,7 +430,8 @@ struct BookmarksView: View {
             }
         } else { //The case for all posts
             HStack {
-                Image(systemName: "folder.fill").foregroundStyle(getColor(colorScheme: colorScheme))
+                Image(systemName: "folder.fill").foregroundStyle(userPreferences.accentColor.opacity(1))
+//                    .foregroundStyle(getColor(colorScheme: colorScheme))
                 Text(name ?? "") .foregroundStyle(getColor(colorScheme: colorScheme))
                 Spacer()
                 Text("\(bookmarkedPosts.count ?? 0)")
@@ -487,7 +492,7 @@ func postFrontView(post: BookmarkedPost) -> some View {
                             } label: {
                                 Label("Add to Folder", systemImage: "folder")
                             }
-                            .tint(.red)
+                            .tint(userPreferences.accentColor)
                         }
                 }
                 .listSectionSpacing(10)

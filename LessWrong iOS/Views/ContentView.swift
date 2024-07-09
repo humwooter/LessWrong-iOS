@@ -139,7 +139,7 @@ struct MainView: View {
     var body : some View {
        
         MainChildView(selectedOption: $selectedOption)
-            .accentColor(.red)
+            .accentColor(userPreferences.accentColor)
             .environmentObject(networkManager)
             .environmentObject(userPreferences)
             .environmentObject(searchModel)
@@ -334,6 +334,7 @@ struct MainChildView: View {
         if !isSearching {
             if selectedOption == .bookmark {
                 BookmarksView()
+                    .environmentObject(userPreferences)
             } else if selectedOption == .settings {
                 SettingsView()
                     .environmentObject(userPreferences)
@@ -362,7 +363,7 @@ struct MainChildView: View {
                                     } label: {
                                         Label("Bookmark", systemImage: "bookmark.fill")
                                     }
-                                    .tint(.red)
+                                    .tint(userPreferences.accentColor)
                                 }
                             
                             
@@ -420,7 +421,7 @@ struct MainChildView: View {
                                                         } label: {
                                                             Label("Bookmark", systemImage: "bookmark.fill")
                                                         }
-                                                        .tint(.red)
+                                                        .tint(userPreferences.accentColor)
                                                     }
                                              
                                        
@@ -459,7 +460,7 @@ struct MainChildView: View {
     
     @ViewBuilder
     func horizontalPickerView() -> some View {
-        HorizontalPicker(selectedOption: $selectedOption, animation: animation).padding(.top).padding(.leading)
+        HorizontalPicker(selectedOption: $selectedOption, animation: animation, showEAForum: $userPreferences.showEAForum, accentColor: $userPreferences.accentColor).padding(.top).padding(.leading)
             .frame(maxWidth: .infinity)
 //            .background {
 //                ZStack {
@@ -491,7 +492,7 @@ struct MainChildView: View {
                 selectedQueryType = .topPosts
             } label: {
                 HStack {
-                    Image(systemName: "flame.fill").foregroundStyle(Color.red)
+                    Image(systemName: "flame.fill").foregroundStyle(userPreferences.accentColor)
                         .padding(.horizontal, 5)
                     Text("Top Posts").foregroundStyle(getColor(colorScheme: colorScheme))
                 }
@@ -502,7 +503,7 @@ struct MainChildView: View {
                 selectedQueryType = .newPosts
             } label: {
                 HStack {
-                    Image(systemName: "arrow.up").foregroundStyle(Color.red)
+                    Image(systemName: "arrow.up").foregroundStyle(userPreferences.accentColor)
                         .padding(.horizontal, 5)
                     
                     Text("New Posts").foregroundStyle(getColor(colorScheme: colorScheme))
@@ -514,25 +515,13 @@ struct MainChildView: View {
                 selectedQueryType = .userPosts
             } label: {
                 HStack {
-                    Image(systemName: "person.fill").foregroundStyle(Color.red)
+                    Image(systemName: "person.fill").foregroundStyle(userPreferences.accentColor)
                         .padding(.horizontal, 5)
                     
                     Text("User").foregroundStyle(getColor(colorScheme: colorScheme))
                 }
             }
             
-            
-//            Button {
-//                searchModel.tokens.append(.comments)
-//                selectedQueryType = .comments
-//            } label: {
-//                HStack {
-//                    Image(systemName: "bubble.fill").foregroundStyle(Color.red)
-//                        .padding(.horizontal, 5)
-//                    
-//                    Text("Comment").foregroundStyle(getColor(colorScheme: colorScheme))
-//                }
-//            }
             
         }
         
@@ -549,7 +538,7 @@ struct MainChildView: View {
                         .foregroundColor(getColor(colorScheme: colorScheme))
 //                        .frame(maxWidth: .infinity, alignment: .leading)
                     if (isPostBookmarked(postURL: post.url)) {
-                        Image(systemName: "bookmark.fill").foregroundStyle(.red)
+                        Image(systemName: "bookmark.fill").foregroundStyle(userPreferences.accentColor)
                     }
                     Spacer()
                 }

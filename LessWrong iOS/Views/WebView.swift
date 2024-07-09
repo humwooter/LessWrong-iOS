@@ -59,12 +59,14 @@ struct WebView: UIViewRepresentable {
         NotificationCenter.default.addObserver(forName: Notification.Name("goBack"), object: nil, queue: .main) { _ in
             if webView.canGoBack {
                 webView.goBack()
+//                webView.reload()
             }
         }
 
         NotificationCenter.default.addObserver(forName: Notification.Name("goForward"), object: nil, queue: .main) { _ in
             if webView.canGoForward {
                 webView.goForward()
+//                webView.reload()
             }
         }
 
